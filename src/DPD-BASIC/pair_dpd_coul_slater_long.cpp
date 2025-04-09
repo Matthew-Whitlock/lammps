@@ -377,7 +377,7 @@ double PairDPDCoulSlaterLong::init_one(int i, int j)
    proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairDPDCoulSlaterLong::write_restart(FILE *fp)
+void PairDPDCoulSlaterLong::write_restart(Store fp)
 {
   write_restart_settings(fp);
 
@@ -400,7 +400,7 @@ void PairDPDCoulSlaterLong::write_restart(FILE *fp)
    proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairDPDCoulSlaterLong::read_restart(FILE *fp)
+void PairDPDCoulSlaterLong::read_restart(Store fp)
 {
   read_restart_settings(fp);
 
@@ -434,7 +434,7 @@ void PairDPDCoulSlaterLong::read_restart(FILE *fp)
    proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairDPDCoulSlaterLong::write_restart_settings(FILE *fp)
+void PairDPDCoulSlaterLong::write_restart_settings(Store fp)
 {
   fwrite(&temperature,sizeof(double),1,fp);
   fwrite(&cut_global,sizeof(double),1,fp);
@@ -447,7 +447,7 @@ void PairDPDCoulSlaterLong::write_restart_settings(FILE *fp)
    proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairDPDCoulSlaterLong::read_restart_settings(FILE *fp)
+void PairDPDCoulSlaterLong::read_restart_settings(Store fp)
 {
   if (comm->me == 0) {
     utils::sfread(FLERR,&temperature,sizeof(double),1,fp,nullptr,error);

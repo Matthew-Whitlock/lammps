@@ -205,7 +205,7 @@ double BondGaussian::equilibrium_distance(int i)
    proc 0 writes out coeffs to restart file
 ------------------------------------------------------------------------- */
 
-void BondGaussian::write_restart(FILE *fp)
+void BondGaussian::write_restart(Store fp)
 {
   fwrite(&bond_temperature[1], sizeof(double), atom->nbondtypes, fp);
   fwrite(&nterms[1], sizeof(int), atom->nbondtypes, fp);
@@ -220,7 +220,7 @@ void BondGaussian::write_restart(FILE *fp)
    proc 0 reads coeffs from restart file, bcasts them
 ------------------------------------------------------------------------- */
 
-void BondGaussian::read_restart(FILE *fp)
+void BondGaussian::read_restart(Store fp)
 {
   allocate();
 

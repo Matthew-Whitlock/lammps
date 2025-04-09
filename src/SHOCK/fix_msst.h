@@ -35,7 +35,7 @@ class FixMSST : public Fix {
   void final_integrate() override;
   double compute_scalar() override;
   double compute_vector(int) override;
-  void write_restart(FILE *) override;
+  void write_restart(Store) override;
   void restart(char *) override;
   int modify_param(int, char **) override;
   double memory_usage() override;

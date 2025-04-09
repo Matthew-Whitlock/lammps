@@ -770,7 +770,7 @@ void DihedralClass2::coeff(int narg, char **arg)
    proc 0 writes out coeffs to restart file
 ------------------------------------------------------------------------- */
 
-void DihedralClass2::write_restart(FILE *fp)
+void DihedralClass2::write_restart(Store fp)
 {
   fwrite(&k1[1],sizeof(double),atom->ndihedraltypes,fp);
   fwrite(&k2[1],sizeof(double),atom->ndihedraltypes,fp);
@@ -817,7 +817,7 @@ void DihedralClass2::write_restart(FILE *fp)
    proc 0 reads coeffs from restart file, bcasts them
 ------------------------------------------------------------------------- */
 
-void DihedralClass2::read_restart(FILE *fp)
+void DihedralClass2::read_restart(Store fp)
 {
   allocate();
 

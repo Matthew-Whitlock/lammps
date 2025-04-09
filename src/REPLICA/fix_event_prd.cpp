@@ -57,7 +57,7 @@ void FixEventPRD::store_event_prd(bigint ntimestep, int delta_clock)
    pack entire state of Fix into one write
 ------------------------------------------------------------------------- */
 
-void FixEventPRD::write_restart(FILE *fp)
+void FixEventPRD::write_restart(Store fp)
 {
   int n = 0;
   double list[6];

@@ -365,7 +365,7 @@ void BondBPMSpringPlastic::settings(int narg, char **arg)
    proc 0 writes out coeffs to restart file
 ------------------------------------------------------------------------- */
 
-void BondBPMSpringPlastic::write_restart(FILE *fp)
+void BondBPMSpringPlastic::write_restart(Store fp)
 {
   BondBPM::write_restart(fp);
   write_restart_settings(fp);
@@ -380,7 +380,7 @@ void BondBPMSpringPlastic::write_restart(FILE *fp)
    proc 0 reads coeffs from restart file, bcasts them
 ------------------------------------------------------------------------- */
 
-void BondBPMSpringPlastic::read_restart(FILE *fp)
+void BondBPMSpringPlastic::read_restart(Store fp)
 {
   BondBPM::read_restart(fp);
   read_restart_settings(fp);
@@ -404,7 +404,7 @@ void BondBPMSpringPlastic::read_restart(FILE *fp)
    proc 0 writes to restart file
  ------------------------------------------------------------------------- */
 
-void BondBPMSpringPlastic::write_restart_settings(FILE *fp)
+void BondBPMSpringPlastic::write_restart_settings(Store fp)
 {
   fwrite(&smooth_flag, sizeof(int), 1, fp);
   fwrite(&normalize_flag, sizeof(int), 1, fp);
@@ -414,7 +414,7 @@ void BondBPMSpringPlastic::write_restart_settings(FILE *fp)
     proc 0 reads from restart file, bcasts
  ------------------------------------------------------------------------- */
 
-void BondBPMSpringPlastic::read_restart_settings(FILE *fp)
+void BondBPMSpringPlastic::read_restart_settings(Store fp)
 {
   if (comm->me == 0) {
     utils::sfread(FLERR, &smooth_flag, sizeof(int), 1, fp, nullptr, error);

@@ -330,7 +330,7 @@ void DihedralHybrid::init_style()
    proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void DihedralHybrid::write_restart(FILE *fp)
+void DihedralHybrid::write_restart(Store fp)
 {
   fwrite(&nstyles, sizeof(int), 1, fp);
 
@@ -347,7 +347,7 @@ void DihedralHybrid::write_restart(FILE *fp)
    proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void DihedralHybrid::read_restart(FILE *fp)
+void DihedralHybrid::read_restart(Store fp)
 {
   int me = comm->me;
   if (me == 0) utils::sfread(FLERR, &nstyles, sizeof(int), 1, fp, nullptr, error);

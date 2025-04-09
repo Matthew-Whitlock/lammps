@@ -324,7 +324,7 @@ void ImproperHybrid::init_style()
    proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void ImproperHybrid::write_restart(FILE *fp)
+void ImproperHybrid::write_restart(Store fp)
 {
   fwrite(&nstyles, sizeof(int), 1, fp);
 
@@ -341,7 +341,7 @@ void ImproperHybrid::write_restart(FILE *fp)
    proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void ImproperHybrid::read_restart(FILE *fp)
+void ImproperHybrid::read_restart(Store fp)
 {
   int me = comm->me;
   if (me == 0) utils::sfread(FLERR, &nstyles, sizeof(int), 1, fp, nullptr, error);

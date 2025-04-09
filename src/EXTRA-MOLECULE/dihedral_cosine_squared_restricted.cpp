@@ -269,7 +269,7 @@ void DihedralCosineSquaredRestricted::coeff(int narg, char **arg)
    proc 0 writes out coeffs to restart file
 ------------------------------------------------------------------------- */
 
-void DihedralCosineSquaredRestricted::write_restart(FILE *fp)
+void DihedralCosineSquaredRestricted::write_restart(Store fp)
 {
   fwrite(&k[1], sizeof(double), atom->ndihedraltypes, fp);
   fwrite(&phi0[1], sizeof(double), atom->ndihedraltypes, fp);
@@ -279,7 +279,7 @@ void DihedralCosineSquaredRestricted::write_restart(FILE *fp)
    proc 0 reads coeffs from restart file, bcasts them
 ------------------------------------------------------------------------- */
 
-void DihedralCosineSquaredRestricted::read_restart(FILE *fp)
+void DihedralCosineSquaredRestricted::read_restart(Store fp)
 {
   allocate();
 

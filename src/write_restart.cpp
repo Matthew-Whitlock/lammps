@@ -237,7 +237,7 @@ void WriteRestart::write(const std::string &file)
   }
 
   // all procs write fix info
-
+  
   modify->write_restart(fp);
 
   // communication buffer for my atom info

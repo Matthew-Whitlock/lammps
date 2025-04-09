@@ -697,7 +697,7 @@ void BondBPMRotational::settings(int narg, char **arg)
    proc 0 writes out coeffs to restart file
 ------------------------------------------------------------------------- */
 
-void BondBPMRotational::write_restart(FILE *fp)
+void BondBPMRotational::write_restart(Store fp)
 {
   BondBPM::write_restart(fp);
   write_restart_settings(fp);
@@ -720,7 +720,7 @@ void BondBPMRotational::write_restart(FILE *fp)
    proc 0 reads coeffs from restart file, bcasts them
 ------------------------------------------------------------------------- */
 
-void BondBPMRotational::read_restart(FILE *fp)
+void BondBPMRotational::read_restart(Store fp)
 {
   BondBPM::read_restart(fp);
   read_restart_settings(fp);
@@ -760,7 +760,7 @@ void BondBPMRotational::read_restart(FILE *fp)
    proc 0 writes to restart file
  ------------------------------------------------------------------------- */
 
-void BondBPMRotational::write_restart_settings(FILE *fp)
+void BondBPMRotational::write_restart_settings(Store fp)
 {
   fwrite(&smooth_flag, sizeof(int), 1, fp);
 }
@@ -769,7 +769,7 @@ void BondBPMRotational::write_restart_settings(FILE *fp)
     proc 0 reads from restart file, bcasts
  ------------------------------------------------------------------------- */
 
-void BondBPMRotational::read_restart_settings(FILE *fp)
+void BondBPMRotational::read_restart_settings(Store fp)
 {
   if (comm->me == 0) utils::sfread(FLERR, &smooth_flag, sizeof(int), 1, fp, nullptr, error);
   MPI_Bcast(&smooth_flag, 1, MPI_INT, 0, world);

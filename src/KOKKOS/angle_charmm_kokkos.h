@@ -41,7 +41,7 @@ class AngleCharmmKokkos : public AngleCharmm {
   ~AngleCharmmKokkos() override;
   void compute(int, int) override;
   void coeff(int, char **) override;
-  void read_restart(FILE *) override;
+  void read_restart(Store) override;
 
   template<int NEWTON_BOND, int EVFLAG>
   KOKKOS_INLINE_FUNCTION

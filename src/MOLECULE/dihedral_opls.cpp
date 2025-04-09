@@ -294,7 +294,7 @@ void DihedralOPLS::coeff(int narg, char **arg)
    proc 0 writes out coeffs to restart file
 ------------------------------------------------------------------------- */
 
-void DihedralOPLS::write_restart(FILE *fp)
+void DihedralOPLS::write_restart(Store fp)
 {
   fwrite(&k1[1], sizeof(double), atom->ndihedraltypes, fp);
   fwrite(&k2[1], sizeof(double), atom->ndihedraltypes, fp);
@@ -306,7 +306,7 @@ void DihedralOPLS::write_restart(FILE *fp)
    proc 0 reads coeffs from restart file, bcasts them
 ------------------------------------------------------------------------- */
 
-void DihedralOPLS::read_restart(FILE *fp)
+void DihedralOPLS::read_restart(Store fp)
 {
   allocate();
 

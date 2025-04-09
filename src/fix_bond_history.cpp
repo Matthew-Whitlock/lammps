@@ -279,7 +279,7 @@ double FixBondHistory::memory_usage()
 
 /* ---------------------------------------------------------------------- */
 
-void FixBondHistory::write_restart(FILE *fp)
+void FixBondHistory::write_restart(Store fp)
 {
   int n = 0;
   double list[1];

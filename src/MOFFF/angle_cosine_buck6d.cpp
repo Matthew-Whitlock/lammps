@@ -317,7 +317,7 @@ double AngleCosineBuck6d::equilibrium_angle(int /*i*/)
    proc 0 writes out coeffs to restart file
 ------------------------------------------------------------------------- */
 
-void AngleCosineBuck6d::write_restart(FILE *fp)
+void AngleCosineBuck6d::write_restart(Store fp)
 {
   fwrite(&k[1],sizeof(double),atom->nangletypes,fp);
   fwrite(&multiplicity[1],sizeof(int),atom->nangletypes,fp);
@@ -328,7 +328,7 @@ void AngleCosineBuck6d::write_restart(FILE *fp)
    proc 0 reads coeffs from restart file, bcasts them
 ------------------------------------------------------------------------- */
 
-void AngleCosineBuck6d::read_restart(FILE *fp)
+void AngleCosineBuck6d::read_restart(Store fp)
 {
   allocate();
 

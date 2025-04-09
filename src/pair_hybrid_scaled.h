@@ -36,8 +36,8 @@ class PairHybridScaled : public PairHybrid {
   void settings(int, char **) override;
   void coeff(int, char **) override;
 
-  void write_restart(FILE *) override;
-  void read_restart(FILE *) override;
+  void write_restart(Store) override;
+  void read_restart(Store) override;
   double single(int, int, int, int, double, double, double, double &) override;
   void born_matrix(int, int, int, int, double, double, double, double &, double &) override;
 

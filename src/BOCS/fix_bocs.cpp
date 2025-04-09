@@ -1271,7 +1271,7 @@ void FixBocs::remap()
    pack entire state of Fix into one write
 ------------------------------------------------------------------------- */
 
-void FixBocs::write_restart(FILE *fp)
+void FixBocs::write_restart(Store fp)
 {
   int nsize = size_restart_global();
 

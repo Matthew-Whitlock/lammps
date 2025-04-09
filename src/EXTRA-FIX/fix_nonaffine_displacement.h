@@ -34,7 +34,7 @@ class FixNonaffineDisplacement : public Fix {
   void init_list(int, class NeighList *) override;
   void setup(int) override;
   void post_force(int) override;
-  void write_restart(FILE *fp) override;
+  void write_restart(Store fp) override;
   void restart(char *buf) override;
   int pack_forward_comm(int, int *, double *, int, int *) override;
   void unpack_forward_comm(int, int, double *) override;

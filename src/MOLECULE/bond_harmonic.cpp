@@ -155,7 +155,7 @@ double BondHarmonic::equilibrium_distance(int i)
    proc 0 writes out coeffs to restart file
 ------------------------------------------------------------------------- */
 
-void BondHarmonic::write_restart(FILE *fp)
+void BondHarmonic::write_restart(Store fp)
 {
   fwrite(&k[1], sizeof(double), atom->nbondtypes, fp);
   fwrite(&r0[1], sizeof(double), atom->nbondtypes, fp);
@@ -165,7 +165,7 @@ void BondHarmonic::write_restart(FILE *fp)
    proc 0 reads coeffs from restart file, bcasts them
 ------------------------------------------------------------------------- */
 
-void BondHarmonic::read_restart(FILE *fp)
+void BondHarmonic::read_restart(Store fp)
 {
   allocate();
 

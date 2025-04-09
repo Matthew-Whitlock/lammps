@@ -224,7 +224,7 @@ double PairYukawa::init_one(int i, int j)
    proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairYukawa::write_restart(FILE *fp)
+void PairYukawa::write_restart(Store fp)
 {
   write_restart_settings(fp);
 
@@ -243,7 +243,7 @@ void PairYukawa::write_restart(FILE *fp)
    proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairYukawa::read_restart(FILE *fp)
+void PairYukawa::read_restart(Store fp)
 {
   read_restart_settings(fp);
 
@@ -270,7 +270,7 @@ void PairYukawa::read_restart(FILE *fp)
    proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairYukawa::write_restart_settings(FILE *fp)
+void PairYukawa::write_restart_settings(Store fp)
 {
   fwrite(&kappa, sizeof(double), 1, fp);
   fwrite(&cut_global, sizeof(double), 1, fp);
@@ -282,7 +282,7 @@ void PairYukawa::write_restart_settings(FILE *fp)
    proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairYukawa::read_restart_settings(FILE *fp)
+void PairYukawa::read_restart_settings(Store fp)
 {
   if (comm->me == 0) {
     utils::sfread(FLERR, &kappa, sizeof(double), 1, fp, nullptr, error);

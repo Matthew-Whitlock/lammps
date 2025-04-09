@@ -53,7 +53,7 @@ class FixChargeRegulation : public Fix {
   void options(int, char **);
   void setThermoTemperaturePointer();
   double memory_usage() override;
-  void write_restart(FILE *) override;
+  void write_restart(Store) override;
   void restart(char *) override;
 
  private:

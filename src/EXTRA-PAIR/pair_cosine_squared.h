@@ -36,10 +36,10 @@ class PairCosineSquared : public Pair {
   // void init_style();
   double init_one(int, int) override;
   void modify_params(int, char **) override;
-  void write_restart(FILE *) override;
-  void read_restart(FILE *) override;
-  void write_restart_settings(FILE *) override;
-  void read_restart_settings(FILE *) override;
+  void write_restart(Store) override;
+  void read_restart(Store) override;
+  void write_restart_settings(Store) override;
+  void read_restart_settings(Store) override;
   void write_data(FILE *) override;
   void write_data_all(FILE *) override;
   void compute(int, int) override;

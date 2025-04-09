@@ -203,7 +203,7 @@ double FixSMDTlsphDtReset::compute_scalar() {
  pack entire state of Fix into one write
  ------------------------------------------------------------------------- */
 
-void FixSMDTlsphDtReset::write_restart(FILE *fp) {
+void FixSMDTlsphDtReset::write_restart(Store fp) {
         int n = 0;
         double list[1];
         list[n++] = t_elapsed;

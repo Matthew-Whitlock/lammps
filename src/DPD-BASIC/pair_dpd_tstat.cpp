@@ -209,7 +209,7 @@ void PairDPDTstat::coeff(int narg, char **arg)
    proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairDPDTstat::write_restart(FILE *fp)
+void PairDPDTstat::write_restart(Store fp)
 {
   write_restart_settings(fp);
 
@@ -228,7 +228,7 @@ void PairDPDTstat::write_restart(FILE *fp)
    proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairDPDTstat::read_restart(FILE *fp)
+void PairDPDTstat::read_restart(Store fp)
 {
   read_restart_settings(fp);
 
@@ -255,7 +255,7 @@ void PairDPDTstat::read_restart(FILE *fp)
    proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairDPDTstat::write_restart_settings(FILE *fp)
+void PairDPDTstat::write_restart_settings(Store fp)
 {
   fwrite(&t_start,sizeof(double),1,fp);
   fwrite(&t_stop,sizeof(double),1,fp);
@@ -268,7 +268,7 @@ void PairDPDTstat::write_restart_settings(FILE *fp)
    proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairDPDTstat::read_restart_settings(FILE *fp)
+void PairDPDTstat::read_restart_settings(Store fp)
 {
   if (comm->me == 0) {
     utils::sfread(FLERR,&t_start,sizeof(double),1,fp,nullptr,error);

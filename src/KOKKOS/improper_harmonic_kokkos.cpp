@@ -334,7 +334,7 @@ void ImproperHarmonicKokkos<DeviceType>::coeff(int narg, char **arg)
 ------------------------------------------------------------------------- */
 
 template<class DeviceType>
-void ImproperHarmonicKokkos<DeviceType>::read_restart(FILE *fp)
+void ImproperHarmonicKokkos<DeviceType>::read_restart(Store fp)
 {
   ImproperHarmonic::read_restart(fp);
 

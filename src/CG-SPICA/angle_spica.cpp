@@ -330,7 +330,7 @@ double AngleSPICA::equilibrium_angle(int i)
    proc 0 writes out coeffs to restart file
 ------------------------------------------------------------------------- */
 
-void AngleSPICA::write_restart(FILE *fp)
+void AngleSPICA::write_restart(Store fp)
 {
   fwrite(&k[1],sizeof(double),atom->nangletypes,fp);
   fwrite(&theta0[1],sizeof(double),atom->nangletypes,fp);
@@ -341,7 +341,7 @@ void AngleSPICA::write_restart(FILE *fp)
    proc 0 reads coeffs from restart file, bcasts them
 ------------------------------------------------------------------------- */
 
-void AngleSPICA::read_restart(FILE *fp)
+void AngleSPICA::read_restart(Store fp)
 {
   allocate();
 

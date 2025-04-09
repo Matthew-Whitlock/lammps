@@ -282,7 +282,7 @@ double AngleTable::equilibrium_angle(int i)
    proc 0 writes to restart file
  ------------------------------------------------------------------------- */
 
-void AngleTable::write_restart(FILE *fp)
+void AngleTable::write_restart(Store fp)
 {
   write_restart_settings(fp);
 }
@@ -291,7 +291,7 @@ void AngleTable::write_restart(FILE *fp)
     proc 0 reads from restart file, bcasts
  ------------------------------------------------------------------------- */
 
-void AngleTable::read_restart(FILE *fp)
+void AngleTable::read_restart(Store fp)
 {
   read_restart_settings(fp);
   allocate();
@@ -301,7 +301,7 @@ void AngleTable::read_restart(FILE *fp)
    proc 0 writes to restart file
  ------------------------------------------------------------------------- */
 
-void AngleTable::write_restart_settings(FILE *fp)
+void AngleTable::write_restart_settings(Store fp)
 {
   fwrite(&tabstyle, sizeof(int), 1, fp);
   fwrite(&tablength, sizeof(int), 1, fp);
@@ -311,7 +311,7 @@ void AngleTable::write_restart_settings(FILE *fp)
     proc 0 reads from restart file, bcasts
  ------------------------------------------------------------------------- */
 
-void AngleTable::read_restart_settings(FILE *fp)
+void AngleTable::read_restart_settings(Store fp)
 {
   if (comm->me == 0) {
     utils::sfread(FLERR, &tabstyle, sizeof(int), 1, fp, nullptr, error);

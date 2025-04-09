@@ -230,7 +230,7 @@ void PairCosineSquared::modify_params(int narg, char **arg)
    proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairCosineSquared::write_restart(FILE *fp)
+void PairCosineSquared::write_restart(Store fp)
 {
   write_restart_settings(fp);
 
@@ -251,7 +251,7 @@ void PairCosineSquared::write_restart(FILE *fp)
    proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairCosineSquared::read_restart(FILE *fp)
+void PairCosineSquared::read_restart(Store fp)
 {
   read_restart_settings(fp);
   allocate();
@@ -283,7 +283,7 @@ void PairCosineSquared::read_restart(FILE *fp)
    proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairCosineSquared::write_restart_settings(FILE *fp)
+void PairCosineSquared::write_restart_settings(Store fp)
 {
   fwrite(&cut_global, sizeof(double), 1, fp);
 }
@@ -292,7 +292,7 @@ void PairCosineSquared::write_restart_settings(FILE *fp)
    proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairCosineSquared::read_restart_settings(FILE *fp)
+void PairCosineSquared::read_restart_settings(Store fp)
 {
   int me = comm->me;
   if (me == 0) {

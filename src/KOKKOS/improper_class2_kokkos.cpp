@@ -937,7 +937,7 @@ void ImproperClass2Kokkos<DeviceType>::coeff(int narg, char **arg)
 ------------------------------------------------------------------------- */
 
 template<class DeviceType>
-void ImproperClass2Kokkos<DeviceType>::read_restart(FILE *fp)
+void ImproperClass2Kokkos<DeviceType>::read_restart(Store fp)
 {
   ImproperClass2::read_restart(fp);
 

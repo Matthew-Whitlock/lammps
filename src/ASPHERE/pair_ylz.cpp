@@ -309,7 +309,7 @@ double PairYLZ::init_one(int i, int j)
    proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairYLZ::write_restart(FILE *fp)
+void PairYLZ::write_restart(Store fp)
 {
   write_restart_settings(fp);
 
@@ -332,7 +332,7 @@ void PairYLZ::write_restart(FILE *fp)
    proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairYLZ::read_restart(FILE *fp)
+void PairYLZ::read_restart(Store fp)
 {
   read_restart_settings(fp);
   allocate();
@@ -366,7 +366,7 @@ void PairYLZ::read_restart(FILE *fp)
    proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairYLZ::write_restart_settings(FILE *fp)
+void PairYLZ::write_restart_settings(Store fp)
 {
   fwrite(&cut_global, sizeof(double), 1, fp);
   fwrite(&offset_flag, sizeof(int), 1, fp);
@@ -377,7 +377,7 @@ void PairYLZ::write_restart_settings(FILE *fp)
    proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairYLZ::read_restart_settings(FILE *fp)
+void PairYLZ::read_restart_settings(Store fp)
 {
   if (comm->me == 0) {
 

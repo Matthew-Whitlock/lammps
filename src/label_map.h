@@ -15,6 +15,7 @@
 #define LMP_LABEL_MAP_H
 
 #include "pointers.h"    // IWYU pragma: export
+#include "store.h"
 
 #include <unordered_map>
 
@@ -39,8 +40,8 @@ class LabelMap : protected Pointers {
   // input/output for atom class label map
 
   void write_data(FILE *);
-  void read_restart(FILE *fp);
-  void write_restart(FILE *);
+  void read_restart(Store fp);
+  void write_restart(Store);
 
  protected:
   int natomtypes, nbondtypes, nangletypes, ndihedraltypes, nimpropertypes;
@@ -69,9 +70,9 @@ class LabelMap : protected Pointers {
                      std::unordered_map<std::string, int> &);    // look up type or create new type
   int search(const std::string &,
              const std::unordered_map<std::string, int> &) const;    // look up type index
-  char *read_string(FILE *);
-  void write_string(const std::string &, FILE *);
-  int read_int(FILE *);
+  char *read_string(Store);
+  void write_string(const std::string &, Store);
+  int read_int(Store);
 
   void write_map(const std::string &);
 };

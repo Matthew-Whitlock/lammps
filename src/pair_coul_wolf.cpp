@@ -223,7 +223,7 @@ double PairCoulWolf::init_one(int /*i*/, int /*j*/)
   proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairCoulWolf::write_restart(FILE *fp)
+void PairCoulWolf::write_restart(Store fp)
 {
   write_restart_settings(fp);
 
@@ -236,7 +236,7 @@ void PairCoulWolf::write_restart(FILE *fp)
   proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairCoulWolf::read_restart(FILE *fp)
+void PairCoulWolf::read_restart(Store fp)
 {
   read_restart_settings(fp);
   allocate();
@@ -254,7 +254,7 @@ void PairCoulWolf::read_restart(FILE *fp)
   proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairCoulWolf::write_restart_settings(FILE *fp)
+void PairCoulWolf::write_restart_settings(Store fp)
 {
   fwrite(&alf, sizeof(double), 1, fp);
   fwrite(&cut_coul, sizeof(double), 1, fp);
@@ -266,7 +266,7 @@ void PairCoulWolf::write_restart_settings(FILE *fp)
    proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairCoulWolf::read_restart_settings(FILE *fp)
+void PairCoulWolf::read_restart_settings(Store fp)
 {
   if (comm->me == 0) {
     utils::sfread(FLERR, &alf, sizeof(double), 1, fp, nullptr, error);

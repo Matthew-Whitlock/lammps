@@ -170,7 +170,7 @@ double BondSpecial::equilibrium_distance(int /*i*/)
    proc 0 writes out coeffs to restart file
 ------------------------------------------------------------------------- */
 
-void BondSpecial::write_restart(FILE *fp)
+void BondSpecial::write_restart(Store fp)
 {
   fwrite(&factor_lj[1],sizeof(double),atom->nbondtypes,fp);
   fwrite(&factor_coul[1],sizeof(double),atom->nbondtypes,fp);
@@ -180,7 +180,7 @@ void BondSpecial::write_restart(FILE *fp)
    proc 0 reads coeffs from restart file, bcasts them
 ------------------------------------------------------------------------- */
 
-void BondSpecial::read_restart(FILE *fp)
+void BondSpecial::read_restart(Store fp)
 {
   allocate();
 

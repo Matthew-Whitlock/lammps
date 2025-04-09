@@ -763,7 +763,7 @@ void FixMSST::remap(int flag)
    pack entire state of Fix into one write
 ------------------------------------------------------------------------- */
 
-void FixMSST::write_restart(FILE *fp)
+void FixMSST::write_restart(Store fp)
 {
   int n = 0;
   double list[5];

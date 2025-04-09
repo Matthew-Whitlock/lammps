@@ -864,7 +864,7 @@ int FixNeighHistory::unpack_exchange(int nlocal, double *buf)
    Use write_restart to invoke pre_exchange
 ------------------------------------------------------------------------- */
 
-void FixNeighHistory::write_restart(FILE *fp)
+void FixNeighHistory::write_restart(Store fp)
 {
   // Call pre-exchange to copy updated history in page file
   // back into per-atom arrays prior to packing restart data

@@ -55,7 +55,7 @@ void FixEventTAD::store_event_tad(bigint ntimestep)
    pack entire state of Fix into one write
 ------------------------------------------------------------------------- */
 
-void FixEventTAD::write_restart(FILE *fp)
+void FixEventTAD::write_restart(Store fp)
 {
   int n = 0;
   double list[4];

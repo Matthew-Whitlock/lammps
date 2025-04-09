@@ -897,7 +897,7 @@ void DihedralTable::coeff(int narg, char **arg)
    proc 0 writes out coeffs to restart file
 ------------------------------------------------------------------------- */
 
-void DihedralTable::write_restart(FILE *fp)
+void DihedralTable::write_restart(Store fp)
 {
   write_restart_settings(fp);
 }
@@ -906,7 +906,7 @@ void DihedralTable::write_restart(FILE *fp)
     proc 0 reads from restart file, bcasts
  ------------------------------------------------------------------------- */
 
-void DihedralTable::read_restart(FILE *fp)
+void DihedralTable::read_restart(Store fp)
 {
   read_restart_settings(fp);
   allocate();
@@ -917,7 +917,7 @@ void DihedralTable::read_restart(FILE *fp)
    proc 0 writes to restart file
  ------------------------------------------------------------------------- */
 
-void DihedralTable::write_restart_settings(FILE *fp)
+void DihedralTable::write_restart_settings(Store fp)
 {
   fwrite(&tabstyle,sizeof(int),1,fp);
   fwrite(&tablength,sizeof(int),1,fp);
@@ -927,7 +927,7 @@ void DihedralTable::write_restart_settings(FILE *fp)
     proc 0 reads from restart file, bcasts
  ------------------------------------------------------------------------- */
 
-void DihedralTable::read_restart_settings(FILE *fp)
+void DihedralTable::read_restart_settings(Store fp)
 {
   if (comm->me == 0) {
     utils::sfread(FLERR,&tabstyle,sizeof(int),1,fp,nullptr,error);

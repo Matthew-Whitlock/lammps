@@ -280,7 +280,7 @@ double PairMomb::init_one(int i, int j)
    proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairMomb::write_restart(FILE *fp)
+void PairMomb::write_restart(Store fp)
 {
   write_restart_settings(fp);
 
@@ -303,7 +303,7 @@ void PairMomb::write_restart(FILE *fp)
    proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairMomb::read_restart(FILE *fp)
+void PairMomb::read_restart(Store fp)
 {
   read_restart_settings(fp);
 
@@ -338,7 +338,7 @@ void PairMomb::read_restart(FILE *fp)
    proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairMomb::write_restart_settings(FILE *fp)
+void PairMomb::write_restart_settings(Store fp)
 {
   fwrite(&cut_global,sizeof(double),1,fp);
   fwrite(&sscale,sizeof(double),1,fp);
@@ -351,7 +351,7 @@ void PairMomb::write_restart_settings(FILE *fp)
    proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairMomb::read_restart_settings(FILE *fp)
+void PairMomb::read_restart_settings(Store fp)
 {
   if (comm->me == 0) {
     utils::sfread(FLERR,&cut_global,sizeof(double),1,fp,nullptr,error);

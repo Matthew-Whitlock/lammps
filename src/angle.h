@@ -15,6 +15,7 @@
 #define LMP_ANGLE_H
 
 #include "pointers.h"    // IWYU pragma: export
+#include "store.h"
 
 namespace LAMMPS_NS {
 
@@ -54,10 +55,10 @@ class Angle : protected Pointers {
   virtual void coeff(int, char **) = 0;
   virtual void init_style() {};
   virtual double equilibrium_angle(int) = 0;
-  virtual void write_restart(FILE *) = 0;
-  virtual void read_restart(FILE *) = 0;
-  virtual void write_restart_settings(FILE *) {};
-  virtual void read_restart_settings(FILE *) {};
+  virtual void write_restart(Store) = 0;
+  virtual void read_restart(Store) = 0;
+  virtual void write_restart_settings(Store) {};
+  virtual void read_restart_settings(Store) {};
   virtual void write_data(FILE *) {}
   virtual double single(int, int, int, int) = 0;
   virtual void born_matrix(int /*atype*/, int /*at1*/, int /*at2*/, int /*at3*/, double &du,

@@ -414,7 +414,7 @@ void DihedralLepton::coeff(int narg, char **arg)
    proc 0 writes out coeffs to restart file
 ------------------------------------------------------------------------- */
 
-void DihedralLepton::write_restart(FILE *fp)
+void DihedralLepton::write_restart(Store fp)
 {
   fwrite(&type2expression[1], sizeof(int), atom->ndihedraltypes, fp);
 
@@ -436,7 +436,7 @@ void DihedralLepton::write_restart(FILE *fp)
    proc 0 reads coeffs from restart file, bcasts them
 ------------------------------------------------------------------------- */
 
-void DihedralLepton::read_restart(FILE *fp)
+void DihedralLepton::read_restart(Store fp)
 {
   allocate();
 

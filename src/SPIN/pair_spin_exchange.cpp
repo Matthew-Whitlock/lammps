@@ -486,7 +486,7 @@ void PairSpinExchange::allocate()
    proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairSpinExchange::write_restart(FILE *fp)
+void PairSpinExchange::write_restart(Store fp)
 {
   write_restart_settings(fp);
 
@@ -509,7 +509,7 @@ void PairSpinExchange::write_restart(FILE *fp)
    proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairSpinExchange::read_restart(FILE *fp)
+void PairSpinExchange::read_restart(Store fp)
 {
   read_restart_settings(fp);
 
@@ -544,7 +544,7 @@ void PairSpinExchange::read_restart(FILE *fp)
    proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairSpinExchange::write_restart_settings(FILE *fp)
+void PairSpinExchange::write_restart_settings(Store fp)
 {
   fwrite(&cut_spin_exchange_global,sizeof(double),1,fp);
   fwrite(&e_offset,sizeof(int),1,fp);
@@ -556,7 +556,7 @@ void PairSpinExchange::write_restart_settings(FILE *fp)
    proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairSpinExchange::read_restart_settings(FILE *fp)
+void PairSpinExchange::read_restart_settings(Store fp)
 {
   if (comm->me == 0) {
     utils::sfread(FLERR,&cut_spin_exchange_global,sizeof(double),1,fp,nullptr,error);

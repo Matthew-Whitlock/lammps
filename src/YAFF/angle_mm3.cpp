@@ -215,7 +215,7 @@ double AngleMM3::equilibrium_angle(int i)
    proc 0 writes out coeffs to restart file
 ------------------------------------------------------------------------- */
 
-void AngleMM3::write_restart(FILE *fp)
+void AngleMM3::write_restart(Store fp)
 {
   fwrite(&k2[1],sizeof(double),atom->nangletypes,fp);
   fwrite(&theta0[1],sizeof(double),atom->nangletypes,fp);
@@ -225,7 +225,7 @@ void AngleMM3::write_restart(FILE *fp)
    proc 0 reads coeffs from restart file, bcasts them
 ------------------------------------------------------------------------- */
 
-void AngleMM3::read_restart(FILE *fp)
+void AngleMM3::read_restart(Store fp)
 {
   allocate();
 

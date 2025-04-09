@@ -409,7 +409,7 @@ void AngleClass2Kokkos<DeviceType>::coeff(int narg, char **arg)
 ------------------------------------------------------------------------- */
 
 template<class DeviceType>
-void AngleClass2Kokkos<DeviceType>::read_restart(FILE *fp)
+void AngleClass2Kokkos<DeviceType>::read_restart(Store fp)
 {
   AngleClass2::read_restart(fp);
 

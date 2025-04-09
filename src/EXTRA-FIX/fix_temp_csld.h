@@ -34,7 +34,7 @@ class FixTempCSLD : public Fix {
   int modify_param(int, char **) override;
   void reset_target(double) override;
   double compute_scalar() override;
-  void write_restart(FILE *) override;
+  void write_restart(Store) override;
   void restart(char *buf) override;
   void *extract(const char *, int &) override;
 

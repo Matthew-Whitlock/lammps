@@ -354,7 +354,7 @@ int FixTTMGrid::unpack_read_grid(int /*nlines*/, char *buffer)
    pack state of Fix into one write, but not per-grid values
 ------------------------------------------------------------------------- */
 
-void FixTTMGrid::write_restart(FILE *fp)
+void FixTTMGrid::write_restart(Store fp)
 {
   double rlist[4];
 

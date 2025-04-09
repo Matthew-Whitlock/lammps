@@ -500,7 +500,7 @@ void BondBPMSpring::settings(int narg, char **arg)
    proc 0 writes out coeffs to restart file
 ------------------------------------------------------------------------- */
 
-void BondBPMSpring::write_restart(FILE *fp)
+void BondBPMSpring::write_restart(Store fp)
 {
   BondBPM::write_restart(fp);
   write_restart_settings(fp);
@@ -515,7 +515,7 @@ void BondBPMSpring::write_restart(FILE *fp)
    proc 0 reads coeffs from restart file, bcasts them
 ------------------------------------------------------------------------- */
 
-void BondBPMSpring::read_restart(FILE *fp)
+void BondBPMSpring::read_restart(Store fp)
 {
   BondBPM::read_restart(fp);
   read_restart_settings(fp);
@@ -539,7 +539,7 @@ void BondBPMSpring::read_restart(FILE *fp)
    proc 0 writes to restart file
  ------------------------------------------------------------------------- */
 
-void BondBPMSpring::write_restart_settings(FILE *fp)
+void BondBPMSpring::write_restart_settings(Store fp)
 {
   fwrite(&smooth_flag, sizeof(int), 1, fp);
   fwrite(&normalize_flag, sizeof(int), 1, fp);
@@ -550,7 +550,7 @@ void BondBPMSpring::write_restart_settings(FILE *fp)
     proc 0 reads from restart file, bcasts
  ------------------------------------------------------------------------- */
 
-void BondBPMSpring::read_restart_settings(FILE *fp)
+void BondBPMSpring::read_restart_settings(Store fp)
 {
   if (comm->me == 0) {
     utils::sfread(FLERR, &smooth_flag, sizeof(int), 1, fp, nullptr, error);

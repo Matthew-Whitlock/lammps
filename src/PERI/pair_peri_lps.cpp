@@ -359,7 +359,7 @@ double PairPeriLPS::init_one(int i, int j)
   proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairPeriLPS::write_restart(FILE *fp)
+void PairPeriLPS::write_restart(Store fp)
 {
   int i,j;
   for (i = 1; i <= atom->ntypes; i++)
@@ -379,7 +379,7 @@ void PairPeriLPS::write_restart(FILE *fp)
   proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairPeriLPS::read_restart(FILE *fp)
+void PairPeriLPS::read_restart(Store fp)
 {
   allocate();
 

@@ -292,7 +292,7 @@ double PairLJClass2Soft::init_one(int i, int j)
    proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairLJClass2Soft::write_restart(FILE *fp)
+void PairLJClass2Soft::write_restart(Store fp)
 {
   write_restart_settings(fp);
 
@@ -313,7 +313,7 @@ void PairLJClass2Soft::write_restart(FILE *fp)
    proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairLJClass2Soft::read_restart(FILE *fp)
+void PairLJClass2Soft::read_restart(Store fp)
 {
   read_restart_settings(fp);
   allocate();
@@ -343,7 +343,7 @@ void PairLJClass2Soft::read_restart(FILE *fp)
    proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairLJClass2Soft::write_restart_settings(FILE *fp)
+void PairLJClass2Soft::write_restart_settings(Store fp)
 {
   fwrite(&nlambda,sizeof(double),1,fp);
   fwrite(&alphalj,sizeof(double),1,fp);
@@ -357,7 +357,7 @@ void PairLJClass2Soft::write_restart_settings(FILE *fp)
    proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairLJClass2Soft::read_restart_settings(FILE *fp)
+void PairLJClass2Soft::read_restart_settings(Store fp)
 {
   int me = comm->me;
   if (me == 0) {

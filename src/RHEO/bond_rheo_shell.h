@@ -33,10 +33,10 @@ class BondRHEOShell : public BondBPM {
   void init_style() override;
   void settings(int, char **) override;
   double equilibrium_distance(int) override;
-  void write_restart(FILE *) override;
-  void read_restart(FILE *) override;
-  void write_restart_settings(FILE *) override;
-  void read_restart_settings(FILE *) override;
+  void write_restart(Store) override;
+  void read_restart(Store) override;
+  void write_restart_settings(Store) override;
+  void read_restart_settings(Store) override;
   int pack_reverse_comm(int, int, double *) override;
   void unpack_reverse_comm(int, int *, double *) override;
   double single(int, double, int, int, double &) override;

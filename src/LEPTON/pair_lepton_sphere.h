@@ -33,7 +33,7 @@ class PairLeptonSphere : public PairLepton {
   void settings(int, char **) override;
   void init_style() override;
   void write_restart_settings(FILE *) override;
-  void read_restart_settings(FILE *) override;
+  void read_restart_settings(Store) override;
   double single(int, int, int, int, double, double, double, double &) override;
 
  private:

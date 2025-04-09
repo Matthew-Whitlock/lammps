@@ -36,8 +36,8 @@ class ImproperHybrid : public Improper {
   void compute(int, int) override;
   void settings(int, char **) override;
   void coeff(int, char **) override;
-  void write_restart(FILE *) override;
-  void read_restart(FILE *) override;
+  void write_restart(Store) override;
+  void read_restart(Store) override;
   double memory_usage() override;
 
  protected:

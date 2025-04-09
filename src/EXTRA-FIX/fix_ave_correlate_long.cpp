@@ -766,7 +766,7 @@ double FixAveCorrelateLong::memory_usage() {
    Write Restart data to restart file
 ------------------------------------------------------------------------- */
 // Save everything except t and f
-void FixAveCorrelateLong::write_restart(FILE *fp) {
+void FixAveCorrelateLong::write_restart(Store fp) {
   if (comm->me == 0) {
     int nsize = 3*npair*numcorrelators*p + 2*npair*numcorrelators
                 + numcorrelators*p + 2*numcorrelators + 7;

@@ -437,7 +437,7 @@ void PairCoulCTIP::setup_params()
   proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairCoulCTIP::write_restart(FILE *fp)
+void PairCoulCTIP::write_restart(Store fp)
 {
   write_restart_settings(fp);
 
@@ -450,7 +450,7 @@ void PairCoulCTIP::write_restart(FILE *fp)
   proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairCoulCTIP::read_restart(FILE *fp)
+void PairCoulCTIP::read_restart(Store fp)
 {
   read_restart_settings(fp);
   allocate();
@@ -468,7 +468,7 @@ void PairCoulCTIP::read_restart(FILE *fp)
   proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairCoulCTIP::write_restart_settings(FILE *fp)
+void PairCoulCTIP::write_restart_settings(Store fp)
 {
   fwrite(&alpha, sizeof(double), 1, fp);
   fwrite(&cut_coul, sizeof(double), 1, fp);
@@ -480,7 +480,7 @@ void PairCoulCTIP::write_restart_settings(FILE *fp)
   proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairCoulCTIP::read_restart_settings(FILE *fp)
+void PairCoulCTIP::read_restart_settings(Store fp)
 {
   if (comm->me == 0) {
     utils::sfread(FLERR, &alpha, sizeof(double), 1, fp, nullptr, error);

@@ -30,10 +30,10 @@ class PairDPDTstat : public PairDPD {
   void compute(int, int) override;
   void settings(int, char **) override;
   void coeff(int, char **) override;
-  void write_restart(FILE *) override;
-  void read_restart(FILE *) override;
-  void write_restart_settings(FILE *) override;
-  void read_restart_settings(FILE *) override;
+  void write_restart(Store) override;
+  void read_restart(Store) override;
+  void write_restart_settings(Store) override;
+  void read_restart_settings(Store) override;
   void write_data(FILE *) override;
   void write_data_all(FILE *) override;
 

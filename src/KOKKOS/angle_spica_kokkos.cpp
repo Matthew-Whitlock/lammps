@@ -424,7 +424,7 @@ void AngleSPICAKokkos<DeviceType>::coeff(int narg, char **arg)
 ------------------------------------------------------------------------- */
 
 template<class DeviceType>
-void AngleSPICAKokkos<DeviceType>::read_restart(FILE *fp)
+void AngleSPICAKokkos<DeviceType>::read_restart(Store fp)
 {
   AngleSPICA::read_restart(fp);
 

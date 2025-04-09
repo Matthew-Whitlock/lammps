@@ -1171,7 +1171,7 @@ void FixRigidNHSmall::compute_dof()
    pack entire state of Fix into one write
 ------------------------------------------------------------------------- */
 
-void FixRigidNHSmall::write_restart(FILE *fp)
+void FixRigidNHSmall::write_restart(Store fp)
 {
   if (tstat_flag == 0 && pstat_flag == 0) return;
 

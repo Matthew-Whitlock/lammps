@@ -1237,7 +1237,7 @@ void FixNH::remap()
    pack entire state of Fix into one write
 ------------------------------------------------------------------------- */
 
-void FixNH::write_restart(FILE *fp)
+void FixNH::write_restart(Store fp)
 {
   int nsize = size_restart_global();
 

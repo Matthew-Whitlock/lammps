@@ -239,7 +239,7 @@ double AngleCosineShiftExp::equilibrium_angle(int i)
    proc 0 writes out coeffs to restart file
 ------------------------------------------------------------------------- */
 
-void AngleCosineShiftExp::write_restart(FILE *fp)
+void AngleCosineShiftExp::write_restart(Store fp)
 {
   fwrite(&umin[1],sizeof(double),atom->nangletypes,fp);
   fwrite(&a[1],sizeof(double),atom->nangletypes,fp);
@@ -252,7 +252,7 @@ void AngleCosineShiftExp::write_restart(FILE *fp)
    proc 0 reads coeffs from restart file, bcasts them
 ------------------------------------------------------------------------- */
 
-void AngleCosineShiftExp::read_restart(FILE *fp)
+void AngleCosineShiftExp::read_restart(Store fp)
 {
   allocate();
 

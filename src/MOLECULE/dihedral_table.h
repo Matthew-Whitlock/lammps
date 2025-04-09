@@ -34,10 +34,10 @@ class DihedralTable : public Dihedral {
   void compute(int, int) override;
   void settings(int, char **) override;
   void coeff(int, char **) override;
-  void write_restart(FILE *) override;
-  void read_restart(FILE *) override;
-  void write_restart_settings(FILE *) override;
-  void read_restart_settings(FILE *) override;
+  void write_restart(Store) override;
+  void read_restart(Store) override;
+  void write_restart_settings(Store) override;
+  void read_restart_settings(Store) override;
   double single(int type, int i1, int i2, int i3, int i4);
 
  protected:

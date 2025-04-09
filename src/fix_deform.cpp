@@ -938,7 +938,7 @@ void FixDeform::update_domain()
    write Set data to restart file
 ------------------------------------------------------------------------- */
 
-void FixDeform::write_restart(FILE *fp)
+void FixDeform::write_restart(Store fp)
 {
   if (comm->me == 0) {
     int size = 6 * sizeof(Set);

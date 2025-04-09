@@ -469,7 +469,7 @@ double PairTIP4PLong::init_one(int i, int j)
   proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairTIP4PLong::write_restart_settings(FILE *fp)
+void PairTIP4PLong::write_restart_settings(Store fp)
 {
   PairCoulLong::write_restart_settings(fp);
 
@@ -484,7 +484,7 @@ void PairTIP4PLong::write_restart_settings(FILE *fp)
   proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairTIP4PLong::read_restart_settings(FILE *fp)
+void PairTIP4PLong::read_restart_settings(Store fp)
 {
   PairCoulLong::read_restart_settings(fp);
 

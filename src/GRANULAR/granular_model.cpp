@@ -366,7 +366,7 @@ void GranularModel::write_restart(FILE *fp)
 
 /* ---------------------------------------------------------------------- */
 
-void GranularModel::read_restart(FILE *fp)
+void GranularModel::read_restart(Store fp)
 {
   int num_char, num_coeff;
 

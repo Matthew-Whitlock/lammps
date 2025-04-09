@@ -31,7 +31,7 @@ class PairLJCutCoulDebye : public PairLJCutCoulCut {
   void compute(int, int) override;
   void settings(int, char **) override;
   void write_restart_settings(FILE *) override;
-  void read_restart_settings(FILE *) override;
+  void read_restart_settings(Store) override;
   double single(int, int, int, int, double, double, double, double &) override;
 
  protected:

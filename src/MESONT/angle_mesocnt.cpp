@@ -319,7 +319,7 @@ double AngleMesoCNT::equilibrium_angle(int /*i*/)
    proc 0 writes out coeffs to restart file
 ------------------------------------------------------------------------- */
 
-void AngleMesoCNT::write_restart(FILE *fp)
+void AngleMesoCNT::write_restart(Store fp)
 {
   fwrite(&buckling[1], sizeof(int), atom->nangletypes, fp);
   fwrite(&kh[1], sizeof(double), atom->nangletypes, fp);
@@ -331,7 +331,7 @@ void AngleMesoCNT::write_restart(FILE *fp)
    proc 0 reads coeffs from restart file, bcasts them
 ------------------------------------------------------------------------- */
 
-void AngleMesoCNT::read_restart(FILE *fp)
+void AngleMesoCNT::read_restart(Store fp)
 {
   allocate();
 

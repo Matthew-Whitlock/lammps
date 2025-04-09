@@ -34,7 +34,7 @@ class PairTIP4PLong : public PairCoulLong {
   void init_style() override;
   double init_one(int, int) override;
   void write_restart_settings(FILE *fp) override;
-  void read_restart_settings(FILE *fp) override;
+  void read_restart_settings(Store fp) override;
   void *extract(const char *, int &) override;
   double memory_usage() override;
 

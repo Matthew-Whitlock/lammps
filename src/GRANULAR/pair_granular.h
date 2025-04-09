@@ -37,8 +37,8 @@ class PairGranular : public Pair {
   void coeff(int, char **) override;
   void init_style() override;
   double init_one(int, int) override;
-  void write_restart(FILE *) override;
-  void read_restart(FILE *) override;
+  void write_restart(Store) override;
+  void read_restart(Store) override;
   void reset_dt() override;
   double single(int, int, int, int, double, double, double, double &) override;
   int pack_forward_comm(int, int *, double *, int, int *) override;

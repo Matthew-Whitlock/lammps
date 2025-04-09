@@ -214,7 +214,7 @@ double AngleFourier::equilibrium_angle(int i)
    proc 0 writes out coeffs to restart file
 ------------------------------------------------------------------------- */
 
-void AngleFourier::write_restart(FILE *fp)
+void AngleFourier::write_restart(Store fp)
 {
   fwrite(&k[1],sizeof(double),atom->nangletypes,fp);
   fwrite(&C0[1],sizeof(double),atom->nangletypes,fp);
@@ -226,7 +226,7 @@ void AngleFourier::write_restart(FILE *fp)
    proc 0 reads coeffs from restart file, bcasts them
 ------------------------------------------------------------------------- */
 
-void AngleFourier::read_restart(FILE *fp)
+void AngleFourier::read_restart(Store fp)
 {
   allocate();
 

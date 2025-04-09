@@ -1252,7 +1252,7 @@ double FixChargeRegulation::compute_vector(int n) {
    pack entire state of Fix into one write
 ------------------------------------------------------------------------- */
 
-void FixChargeRegulation::write_restart(FILE *fp)
+void FixChargeRegulation::write_restart(Store fp)
 {
   int n = 0;
   double list[10];

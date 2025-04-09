@@ -346,7 +346,7 @@ double PairLJGromacsCoulGromacs::init_one(int i, int j)
   proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairLJGromacsCoulGromacs::write_restart(FILE *fp)
+void PairLJGromacsCoulGromacs::write_restart(Store fp)
 {
   write_restart_settings(fp);
 
@@ -365,7 +365,7 @@ void PairLJGromacsCoulGromacs::write_restart(FILE *fp)
   proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairLJGromacsCoulGromacs::read_restart(FILE *fp)
+void PairLJGromacsCoulGromacs::read_restart(Store fp)
 {
   read_restart_settings(fp);
   allocate();
@@ -391,7 +391,7 @@ void PairLJGromacsCoulGromacs::read_restart(FILE *fp)
   proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairLJGromacsCoulGromacs::write_restart_settings(FILE *fp)
+void PairLJGromacsCoulGromacs::write_restart_settings(Store fp)
 {
   fwrite(&cut_lj_inner, sizeof(double), 1, fp);
   fwrite(&cut_lj, sizeof(double), 1, fp);
@@ -405,7 +405,7 @@ void PairLJGromacsCoulGromacs::write_restart_settings(FILE *fp)
   proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairLJGromacsCoulGromacs::read_restart_settings(FILE *fp)
+void PairLJGromacsCoulGromacs::read_restart_settings(Store fp)
 {
   if (comm->me == 0) {
     utils::sfread(FLERR, &cut_lj_inner, sizeof(double), 1, fp, nullptr, error);

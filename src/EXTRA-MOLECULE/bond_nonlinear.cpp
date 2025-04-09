@@ -156,7 +156,7 @@ double BondNonlinear::equilibrium_distance(int i)
    proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void BondNonlinear::write_restart(FILE *fp)
+void BondNonlinear::write_restart(Store fp)
 {
   fwrite(&epsilon[1],sizeof(double),atom->nbondtypes,fp);
   fwrite(&r0[1],sizeof(double),atom->nbondtypes,fp);
@@ -167,7 +167,7 @@ void BondNonlinear::write_restart(FILE *fp)
    proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void BondNonlinear::read_restart(FILE *fp)
+void BondNonlinear::read_restart(Store fp)
 {
   allocate();
 

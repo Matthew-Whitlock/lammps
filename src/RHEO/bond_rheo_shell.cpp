@@ -413,7 +413,7 @@ double BondRHEOShell::equilibrium_distance(int /*i*/)
    proc 0 writes out coeffs to restart file
 ------------------------------------------------------------------------- */
 
-void BondRHEOShell::write_restart(FILE *fp)
+void BondRHEOShell::write_restart(Store fp)
 {
   BondBPM::write_restart(fp);
   write_restart_settings(fp);
@@ -427,7 +427,7 @@ void BondRHEOShell::write_restart(FILE *fp)
    proc 0 reads coeffs from restart file, bcasts them
 ------------------------------------------------------------------------- */
 
-void BondRHEOShell::read_restart(FILE *fp)
+void BondRHEOShell::read_restart(Store fp)
 {
   BondBPM::read_restart(fp);
   read_restart_settings(fp);
@@ -449,7 +449,7 @@ void BondRHEOShell::read_restart(FILE *fp)
    proc 0 writes to restart file
  ------------------------------------------------------------------------- */
 
-void BondRHEOShell::write_restart_settings(FILE *fp)
+void BondRHEOShell::write_restart_settings(Store fp)
 {
   fwrite(&tform, sizeof(double), 1, fp);
 }
@@ -458,7 +458,7 @@ void BondRHEOShell::write_restart_settings(FILE *fp)
     proc 0 reads from restart file, bcasts
  ------------------------------------------------------------------------- */
 
-void BondRHEOShell::read_restart_settings(FILE *fp)
+void BondRHEOShell::read_restart_settings(Store fp)
 {
   if (comm->me == 0) { utils::sfread(FLERR, &tform, sizeof(double), 1, fp, nullptr, error); }
   MPI_Bcast(&tform, 1, MPI_DOUBLE, 0, world);

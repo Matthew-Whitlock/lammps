@@ -46,7 +46,7 @@ class PairDPDIntel : public PairDPD {
   void compute(int, int) override;
   void settings(int, char **) override;
   void init_style() override;
-  void read_restart_settings(FILE *) override;
+  void read_restart_settings(Store) override;
 
  private:
   FixIntel *fix;

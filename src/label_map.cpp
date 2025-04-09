@@ -364,7 +364,7 @@ void LabelMap::write_data(FILE *fp)
    proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void LabelMap::read_restart(FILE *fp)
+void LabelMap::read_restart(Store fp)
 {
   char *charlabel;
 
@@ -408,7 +408,7 @@ void LabelMap::read_restart(FILE *fp)
    proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void LabelMap::write_restart(FILE *fp)
+void LabelMap::write_restart(Store fp)
 {
   for (int i = 0; i < natomtypes; i++) write_string(typelabel[i], fp);
 
@@ -426,7 +426,7 @@ void LabelMap::write_restart(FILE *fp)
    str is allocated here, ptr is returned, caller must deallocate
 ------------------------------------------------------------------------- */
 
-char *LabelMap::read_string(FILE *fp)
+char *LabelMap::read_string(Store fp)
 {
   int n = read_int(fp);
   if (n < 0) error->all(FLERR, "Illegal size string or corrupt restart");
@@ -441,7 +441,7 @@ char *LabelMap::read_string(FILE *fp)
    byte) into the restart file
 ------------------------------------------------------------------------- */
 
-void LabelMap::write_string(const std::string &str, FILE *fp)
+void LabelMap::write_string(const std::string &str, Store fp)
 {
   const char *cstr = str.c_str();
   int n = strlen(cstr) + 1;
@@ -453,7 +453,7 @@ void LabelMap::write_string(const std::string &str, FILE *fp)
    read an int from restart file and bcast it
 ------------------------------------------------------------------------- */
 
-int LabelMap::read_int(FILE *fp)
+int LabelMap::read_int(Store fp)
 {
   int value;
   if ((comm->me == 0) && (fread(&value, sizeof(int), 1, fp) < 1)) value = -1;

@@ -282,7 +282,7 @@ double PairLJMDF::init_one(int i, int j)
   proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairLJMDF::write_restart(FILE *fp)
+void PairLJMDF::write_restart(Store fp)
 {
   write_restart_settings(fp);
 
@@ -303,7 +303,7 @@ void PairLJMDF::write_restart(FILE *fp)
   proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairLJMDF::read_restart(FILE *fp)
+void PairLJMDF::read_restart(Store fp)
 {
   read_restart_settings(fp);
   allocate();
@@ -333,7 +333,7 @@ void PairLJMDF::read_restart(FILE *fp)
   proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairLJMDF::write_restart_settings(FILE *fp)
+void PairLJMDF::write_restart_settings(Store fp)
 {
   fwrite(&mix_flag,sizeof(int),1,fp);
 }
@@ -342,7 +342,7 @@ void PairLJMDF::write_restart_settings(FILE *fp)
   proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairLJMDF::read_restart_settings(FILE *fp)
+void PairLJMDF::read_restart_settings(Store fp)
 {
   int me = comm->me;
   if (me == 0) {

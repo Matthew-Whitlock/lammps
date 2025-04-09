@@ -441,7 +441,7 @@ void PairSpinMagelec::allocate()
    proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairSpinMagelec::write_restart(FILE *fp)
+void PairSpinMagelec::write_restart(Store fp)
 {
   write_restart_settings(fp);
 
@@ -463,7 +463,7 @@ void PairSpinMagelec::write_restart(FILE *fp)
    proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairSpinMagelec::read_restart(FILE *fp)
+void PairSpinMagelec::read_restart(Store fp)
 {
   read_restart_settings(fp);
 
@@ -497,7 +497,7 @@ void PairSpinMagelec::read_restart(FILE *fp)
    proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairSpinMagelec::write_restart_settings(FILE *fp)
+void PairSpinMagelec::write_restart_settings(Store fp)
 {
   fwrite(&cut_spin_magelec_global,sizeof(double),1,fp);
   fwrite(&offset_flag,sizeof(int),1,fp);
@@ -508,7 +508,7 @@ void PairSpinMagelec::write_restart_settings(FILE *fp)
    proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairSpinMagelec::read_restart_settings(FILE *fp)
+void PairSpinMagelec::read_restart_settings(Store fp)
 {
   if (comm->me == 0) {
     utils::sfread(FLERR,&cut_spin_magelec_global,sizeof(double),1,fp,nullptr,error);

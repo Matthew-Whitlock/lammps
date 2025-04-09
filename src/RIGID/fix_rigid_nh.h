@@ -29,7 +29,7 @@ class FixRigidNH : public FixRigid {
   void final_integrate() override;
   double compute_scalar() override;
   int modify_param(int, char **) override;
-  void write_restart(FILE *) override;
+  void write_restart(Store) override;
   void restart(char *buf) override;
   void reset_target(double) override;
 

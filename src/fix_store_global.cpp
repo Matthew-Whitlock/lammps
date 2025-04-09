@@ -117,7 +117,7 @@ void FixStoreGlobal::reset_global(int n1_caller, int n2_caller)
    write global vector/array to restart file
 ------------------------------------------------------------------------- */
 
-void FixStoreGlobal::write_restart(FILE *fp)
+void FixStoreGlobal::write_restart(Store fp)
 {
   // fill rbuf with size and vector/array values
 

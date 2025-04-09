@@ -420,7 +420,7 @@ double PairBuck6dCoulGaussLong::init_one(int i, int j)
   proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairBuck6dCoulGaussLong::write_restart(FILE *fp)
+void PairBuck6dCoulGaussLong::write_restart(Store fp)
 {
   write_restart_settings(fp);
 
@@ -443,7 +443,7 @@ void PairBuck6dCoulGaussLong::write_restart(FILE *fp)
   proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairBuck6dCoulGaussLong::read_restart(FILE *fp)
+void PairBuck6dCoulGaussLong::read_restart(Store fp)
 {
   read_restart_settings(fp);
   allocate();
@@ -477,7 +477,7 @@ void PairBuck6dCoulGaussLong::read_restart(FILE *fp)
   proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairBuck6dCoulGaussLong::write_restart_settings(FILE *fp)
+void PairBuck6dCoulGaussLong::write_restart_settings(Store fp)
 {
   fwrite(&vdwl_smooth,sizeof(double),1,fp);
   fwrite(&coul_smooth,sizeof(double),1,fp);
@@ -492,7 +492,7 @@ void PairBuck6dCoulGaussLong::write_restart_settings(FILE *fp)
   proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairBuck6dCoulGaussLong::read_restart_settings(FILE *fp)
+void PairBuck6dCoulGaussLong::read_restart_settings(Store fp)
 {
   if (comm->me == 0) {
     utils::sfread(FLERR,&vdwl_smooth,sizeof(double),1,fp,nullptr,error);

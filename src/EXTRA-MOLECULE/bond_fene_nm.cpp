@@ -191,7 +191,7 @@ double BondFENENM::equilibrium_distance(int i)
    proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void BondFENENM::write_restart(FILE *fp)
+void BondFENENM::write_restart(Store fp)
 {
   fwrite(&k[1], sizeof(double), atom->nbondtypes, fp);
   fwrite(&r0[1], sizeof(double), atom->nbondtypes, fp);
@@ -205,7 +205,7 @@ void BondFENENM::write_restart(FILE *fp)
    proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void BondFENENM::read_restart(FILE *fp)
+void BondFENENM::read_restart(Store fp)
 {
   allocate();
 

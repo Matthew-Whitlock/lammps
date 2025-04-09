@@ -293,7 +293,7 @@ double FixTempCSLD::compute_scalar()
    pack entire state of Fix into one write
 ------------------------------------------------------------------------- */
 
-void FixTempCSLD::write_restart(FILE *fp)
+void FixTempCSLD::write_restart(Store fp)
 {
   int nsize = PRNGSIZE*comm->nprocs+2; // pRNG state per proc + nprocs + energy
   double *list = nullptr;

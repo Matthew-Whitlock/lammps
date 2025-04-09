@@ -15,6 +15,7 @@
 #define LMP_FIX_H
 
 #include "pointers.h"    // IWYU pragma: export
+#include "store.h"
 
 namespace LAMMPS_NS {
 
@@ -166,7 +167,7 @@ class Fix : protected Pointers {
   virtual void fused_integrate(int) {}
   virtual void end_of_step() {}
   virtual void post_run() {}
-  virtual void write_restart(FILE *) {}
+  virtual void write_restart(Store) {}
   virtual void write_restart_file(const char *) {}
   virtual void restart(char *) {}
 

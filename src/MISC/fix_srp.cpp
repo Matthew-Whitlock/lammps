@@ -582,7 +582,7 @@ int FixSRP::size_restart(int /*nlocal*/)
    pack global state of Fix
 ------------------------------------------------------------------------- */
 
-void FixSRP::write_restart(FILE *fp)
+void FixSRP::write_restart(Store fp)
 {
   int n = 0;
   double list[3];

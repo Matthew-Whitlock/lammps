@@ -533,7 +533,7 @@ int FixWallGranRegion::size_restart(int nlocal)
    pack entire state of Fix into one write
 ------------------------------------------------------------------------- */
 
-void FixWallGranRegion::write_restart(FILE *fp)
+void FixWallGranRegion::write_restart(Store fp)
 {
   if (comm->me) return;
   int len = 0;

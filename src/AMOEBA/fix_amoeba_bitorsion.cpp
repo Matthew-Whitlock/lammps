@@ -1616,7 +1616,7 @@ void FixAmoebaBiTorsion::write_data_section(int /*mth*/, FILE *fp,
    pack entire state of Fix into one write
 ------------------------------------------------------------------------- */
 
-void FixAmoebaBiTorsion::write_restart(FILE *fp)
+void FixAmoebaBiTorsion::write_restart(Store fp)
 {
   if (comm->me == 0) {
     int size = sizeof(bigint);

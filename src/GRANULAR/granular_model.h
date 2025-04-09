@@ -59,7 +59,7 @@ class GranularModel : protected Pointers {
   int mix_coeffs(GranularModel*, GranularModel*);
 
   void write_restart(FILE *);
-  void read_restart(FILE *);
+  void read_restart(Store);
 
   // Sub models
   GranSubModNormal *normal_model;

@@ -233,7 +233,7 @@ double AngleCharmm::equilibrium_angle(int i)
    proc 0 writes out coeffs to restart file
 ------------------------------------------------------------------------- */
 
-void AngleCharmm::write_restart(FILE *fp)
+void AngleCharmm::write_restart(Store fp)
 {
   fwrite(&k[1], sizeof(double), atom->nangletypes, fp);
   fwrite(&theta0[1], sizeof(double), atom->nangletypes, fp);
@@ -245,7 +245,7 @@ void AngleCharmm::write_restart(FILE *fp)
    proc 0 reads coeffs from restart file, bcasts them
 ------------------------------------------------------------------------- */
 
-void AngleCharmm::read_restart(FILE *fp)
+void AngleCharmm::read_restart(Store fp)
 {
   allocate();
 

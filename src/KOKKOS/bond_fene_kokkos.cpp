@@ -281,7 +281,7 @@ void BondFENEKokkos<DeviceType>::coeff(int narg, char **arg)
 ------------------------------------------------------------------------- */
 
 template<class DeviceType>
-void BondFENEKokkos<DeviceType>::read_restart(FILE *fp)
+void BondFENEKokkos<DeviceType>::read_restart(Store fp)
 {
   BondFENE::read_restart(fp);
 

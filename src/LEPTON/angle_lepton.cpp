@@ -312,7 +312,7 @@ double AngleLepton::equilibrium_angle(int i)
    proc 0 writes out coeffs to restart file
 ------------------------------------------------------------------------- */
 
-void AngleLepton::write_restart(FILE *fp)
+void AngleLepton::write_restart(Store fp)
 {
   fwrite(&theta0[1], sizeof(double), atom->nangletypes, fp);
   fwrite(&type2expression[1], sizeof(int), atom->nangletypes, fp);
@@ -337,7 +337,7 @@ void AngleLepton::write_restart(FILE *fp)
    proc 0 reads coeffs from restart file, bcasts them
 ------------------------------------------------------------------------- */
 
-void AngleLepton::read_restart(FILE *fp)
+void AngleLepton::read_restart(Store fp)
 {
   allocate();
 

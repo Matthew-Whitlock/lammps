@@ -34,10 +34,10 @@ class PairEffCut : public Pair {
   void init_style() override;
   void min_pointers(double **, double **);
   double init_one(int, int) override;
-  void write_restart(FILE *) override;
-  void read_restart(FILE *) override;
-  void write_restart_settings(FILE *) override;
-  void read_restart_settings(FILE *) override;
+  void write_restart(Store) override;
+  void read_restart(Store) override;
+  void write_restart_settings(Store) override;
+  void read_restart_settings(Store) override;
 
   void min_xf_pointers(int, double **, double **) override;
   void min_xf_get(int) override;

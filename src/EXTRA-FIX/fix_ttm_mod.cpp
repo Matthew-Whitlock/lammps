@@ -910,7 +910,7 @@ double FixTTMMod::compute_vector(int n)
    pack entire state of Fix into one write
 ------------------------------------------------------------------------- */
 
-void FixTTMMod::write_restart(FILE *fp)
+void FixTTMMod::write_restart(Store fp)
 {
   double *rlist;
   memory->create(rlist,nzgrid*nygrid*nxgrid + 4,"ttm/mod:rlist");

@@ -308,7 +308,7 @@ void ImproperAmoeba::init_style()
    proc 0 writes out coeffs to restart file
 ------------------------------------------------------------------------- */
 
-void ImproperAmoeba::write_restart(FILE *fp)
+void ImproperAmoeba::write_restart(Store fp)
 {
   fwrite(&k[1],sizeof(double),atom->nimpropertypes,fp);
 }
@@ -317,7 +317,7 @@ void ImproperAmoeba::write_restart(FILE *fp)
    proc 0 reads coeffs from restart file, bcasts them
 ------------------------------------------------------------------------- */
 
-void ImproperAmoeba::read_restart(FILE *fp)
+void ImproperAmoeba::read_restart(Store fp)
 {
   allocate();
 

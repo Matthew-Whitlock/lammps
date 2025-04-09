@@ -33,8 +33,8 @@ class AngleZero : public Angle {
   void settings(int, char **) override;
 
   double equilibrium_angle(int) override;
-  void write_restart(FILE *) override;
-  void read_restart(FILE *) override;
+  void write_restart(Store) override;
+  void read_restart(Store) override;
   void write_data(FILE *) override;
 
   double single(int, int, int, int) override;

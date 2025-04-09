@@ -286,7 +286,7 @@ void ImproperUmbrella::coeff(int narg, char **arg)
    proc 0 writes out coeffs to restart file
 ------------------------------------------------------------------------- */
 
-void ImproperUmbrella::write_restart(FILE *fp)
+void ImproperUmbrella::write_restart(Store fp)
 {
   fwrite(&kw[1], sizeof(double), atom->nimpropertypes, fp);
   fwrite(&w0[1], sizeof(double), atom->nimpropertypes, fp);
@@ -297,7 +297,7 @@ void ImproperUmbrella::write_restart(FILE *fp)
    proc 0 reads coeffs from restart file, bcasts them
 ------------------------------------------------------------------------- */
 
-void ImproperUmbrella::read_restart(FILE *fp)
+void ImproperUmbrella::read_restart(Store fp)
 {
   allocate();
 

@@ -32,10 +32,10 @@ class AngleTable : public Angle {
   void settings(int, char **) override;
   void coeff(int, char **) override;
   double equilibrium_angle(int) override;
-  void write_restart(FILE *) override;
-  void read_restart(FILE *) override;
-  void write_restart_settings(FILE *) override;
-  void read_restart_settings(FILE *) override;
+  void write_restart(Store) override;
+  void read_restart(Store) override;
+  void write_restart_settings(Store) override;
+  void read_restart_settings(Store) override;
   double single(int, int, int, int) override;
 
  protected:

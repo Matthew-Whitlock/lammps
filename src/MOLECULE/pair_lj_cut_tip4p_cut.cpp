@@ -609,7 +609,7 @@ double PairLJCutTIP4PCut::init_one(int i, int j)
   proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairLJCutTIP4PCut::write_restart(FILE *fp)
+void PairLJCutTIP4PCut::write_restart(Store fp)
 {
   write_restart_settings(fp);
 
@@ -630,7 +630,7 @@ void PairLJCutTIP4PCut::write_restart(FILE *fp)
   proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairLJCutTIP4PCut::read_restart(FILE *fp)
+void PairLJCutTIP4PCut::read_restart(Store fp)
 {
   read_restart_settings(fp);
   allocate();
@@ -659,7 +659,7 @@ void PairLJCutTIP4PCut::read_restart(FILE *fp)
   proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairLJCutTIP4PCut::write_restart_settings(FILE *fp)
+void PairLJCutTIP4PCut::write_restart_settings(Store fp)
 {
   fwrite(&typeO,sizeof(int),1,fp);
   fwrite(&typeH,sizeof(int),1,fp);
@@ -678,7 +678,7 @@ void PairLJCutTIP4PCut::write_restart_settings(FILE *fp)
   proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairLJCutTIP4PCut::read_restart_settings(FILE *fp)
+void PairLJCutTIP4PCut::read_restart_settings(Store fp)
 {
   if (comm->me == 0) {
     utils::sfread(FLERR,&typeO,sizeof(int),1,fp,nullptr,error);

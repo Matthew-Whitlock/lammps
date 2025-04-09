@@ -4508,7 +4508,7 @@ void FixBondReact::unpack_reverse_comm(int n, int *list, double *buf)
    write Set data to restart file
 ------------------------------------------------------------------------- */
 
-void FixBondReact::write_restart(FILE *fp)
+void FixBondReact::write_restart(Store fp)
 {
   int revision = 1;
   set[0].nreacts = nreacts;

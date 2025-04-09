@@ -235,7 +235,7 @@ double AngleCosinePeriodic::equilibrium_angle(int i)
    proc 0 writes out coeffs to restart file
 ------------------------------------------------------------------------- */
 
-void AngleCosinePeriodic::write_restart(FILE *fp)
+void AngleCosinePeriodic::write_restart(Store fp)
 {
   fwrite(&k[1],sizeof(double),atom->nangletypes,fp);
   fwrite(&b[1],sizeof(int),atom->nangletypes,fp);
@@ -246,7 +246,7 @@ void AngleCosinePeriodic::write_restart(FILE *fp)
    proc 0 reads coeffs from restart file, bcasts them
 ------------------------------------------------------------------------- */
 
-void AngleCosinePeriodic::read_restart(FILE *fp)
+void AngleCosinePeriodic::read_restart(Store fp)
 {
   allocate();
 

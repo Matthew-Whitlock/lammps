@@ -557,7 +557,7 @@ void FixTTM::grow_arrays(int ngrow)
    pack entire state of Fix into one write
 ------------------------------------------------------------------------- */
 
-void FixTTM::write_restart(FILE *fp)
+void FixTTM::write_restart(Store fp)
 {
   double *rlist;
   memory->create(rlist,nxgrid*nygrid*nzgrid+4,"ttm:rlist");

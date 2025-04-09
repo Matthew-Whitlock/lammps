@@ -285,7 +285,7 @@ void FixUpdateSpecialBonds::add_created_bond(int i, int j)
    Use write_restart to invoke pre_exchange
 ------------------------------------------------------------------------- */
 
-void FixUpdateSpecialBonds::write_restart(FILE *fp)
+void FixUpdateSpecialBonds::write_restart(Store fp)
 {
   // Call pre-exchange to process any broken/created bonds
 

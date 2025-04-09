@@ -297,7 +297,7 @@ double PairDPD::init_one(int i, int j)
    proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairDPD::write_restart(FILE *fp)
+void PairDPD::write_restart(Store fp)
 {
   write_restart_settings(fp);
 
@@ -317,7 +317,7 @@ void PairDPD::write_restart(FILE *fp)
    proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairDPD::read_restart(FILE *fp)
+void PairDPD::read_restart(Store fp)
 {
   read_restart_settings(fp);
 
@@ -346,7 +346,7 @@ void PairDPD::read_restart(FILE *fp)
    proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairDPD::write_restart_settings(FILE *fp)
+void PairDPD::write_restart_settings(Store fp)
 {
   fwrite(&temperature,sizeof(double),1,fp);
   fwrite(&cut_global,sizeof(double),1,fp);
@@ -358,7 +358,7 @@ void PairDPD::write_restart_settings(FILE *fp)
    proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairDPD::read_restart_settings(FILE *fp)
+void PairDPD::read_restart_settings(Store fp)
 {
   if (comm->me == 0) {
     utils::sfread(FLERR,&temperature,sizeof(double),1,fp,nullptr,error);

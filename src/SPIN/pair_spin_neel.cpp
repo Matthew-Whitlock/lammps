@@ -651,7 +651,7 @@ void PairSpinNeel::allocate()
    proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairSpinNeel::write_restart(FILE *fp)
+void PairSpinNeel::write_restart(Store fp)
 {
   write_restart_settings(fp);
 
@@ -677,7 +677,7 @@ void PairSpinNeel::write_restart(FILE *fp)
    proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairSpinNeel::read_restart(FILE *fp)
+void PairSpinNeel::read_restart(Store fp)
 {
   read_restart_settings(fp);
 
@@ -719,7 +719,7 @@ void PairSpinNeel::read_restart(FILE *fp)
    proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairSpinNeel::write_restart_settings(FILE *fp)
+void PairSpinNeel::write_restart_settings(Store fp)
 {
   fwrite(&cut_spin_neel_global,sizeof(double),1,fp);
   fwrite(&offset_flag,sizeof(int),1,fp);
@@ -730,7 +730,7 @@ void PairSpinNeel::write_restart_settings(FILE *fp)
    proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairSpinNeel::read_restart_settings(FILE *fp)
+void PairSpinNeel::read_restart_settings(Store fp)
 {
   if (comm->me == 0) {
     utils::sfread(FLERR,&cut_spin_neel_global,sizeof(double),1,fp,nullptr,error);

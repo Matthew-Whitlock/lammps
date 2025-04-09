@@ -250,7 +250,7 @@ double AngleGaussian::equilibrium_angle(int i)
    proc 0 writes out coeffs to restart file
 ------------------------------------------------------------------------- */
 
-void AngleGaussian::write_restart(FILE *fp)
+void AngleGaussian::write_restart(Store fp)
 {
   fwrite(&angle_temperature[1], sizeof(double), atom->nangletypes, fp);
   fwrite(&nterms[1], sizeof(int), atom->nangletypes, fp);
@@ -265,7 +265,7 @@ void AngleGaussian::write_restart(FILE *fp)
    proc 0 reads coeffs from restart file, bcasts them
 ------------------------------------------------------------------------- */
 
-void AngleGaussian::read_restart(FILE *fp)
+void AngleGaussian::read_restart(Store fp)
 {
   allocate();
 

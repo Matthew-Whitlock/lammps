@@ -550,7 +550,7 @@ double PairGranHookeHistory::init_one(int i, int j)
   proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairGranHookeHistory::write_restart(FILE *fp)
+void PairGranHookeHistory::write_restart(Store fp)
 {
   write_restart_settings(fp);
 
@@ -563,7 +563,7 @@ void PairGranHookeHistory::write_restart(FILE *fp)
   proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairGranHookeHistory::read_restart(FILE *fp)
+void PairGranHookeHistory::read_restart(Store fp)
 {
   read_restart_settings(fp);
   allocate();
@@ -581,7 +581,7 @@ void PairGranHookeHistory::read_restart(FILE *fp)
   proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairGranHookeHistory::write_restart_settings(FILE *fp)
+void PairGranHookeHistory::write_restart_settings(Store fp)
 {
   fwrite(&kn, sizeof(double), 1, fp);
   fwrite(&kt, sizeof(double), 1, fp);
@@ -595,7 +595,7 @@ void PairGranHookeHistory::write_restart_settings(FILE *fp)
   proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairGranHookeHistory::read_restart_settings(FILE *fp)
+void PairGranHookeHistory::read_restart_settings(Store fp)
 {
   if (comm->me == 0) {
     utils::sfread(FLERR, &kn, sizeof(double), 1, fp, nullptr, error);

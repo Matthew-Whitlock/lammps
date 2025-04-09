@@ -116,7 +116,7 @@ double AngleZero::equilibrium_angle(int i)
    proc 0 writes out coeffs to restart file
 ------------------------------------------------------------------------- */
 
-void AngleZero::write_restart(FILE *fp)
+void AngleZero::write_restart(Store fp)
 {
   fwrite(&theta0[1], sizeof(double), atom->nangletypes, fp);
 }
@@ -125,7 +125,7 @@ void AngleZero::write_restart(FILE *fp)
    proc 0 reads coeffs from restart file, bcasts them
 ------------------------------------------------------------------------- */
 
-void AngleZero::read_restart(FILE *fp)
+void AngleZero::read_restart(Store fp)
 {
   allocate();
 

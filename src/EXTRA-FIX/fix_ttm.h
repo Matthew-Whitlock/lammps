@@ -39,7 +39,7 @@ class FixTTM : public Fix {
   void end_of_step() override;
   void reset_dt() override;
   void grow_arrays(int) override;
-  void write_restart(FILE *) override;
+  void write_restart(Store) override;
   void restart(char *) override;
   int pack_restart(int, double *) override;
   void unpack_restart(int, int) override;

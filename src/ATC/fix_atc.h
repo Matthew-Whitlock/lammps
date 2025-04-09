@@ -120,7 +120,7 @@ class FixATC : public Fix {
   int size_restart(int) override;
   int maxsize_restart() override;
   /** these two methods are for writing all other quantities */
-  void write_restart(FILE *) override;
+  void write_restart(Store) override;
   void restart(char *) override;
 
   /** accessor function for ATC_Method class pointer */

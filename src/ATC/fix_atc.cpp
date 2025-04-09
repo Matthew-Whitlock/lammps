@@ -695,7 +695,7 @@ int FixATC::size_restart(int /* nlocal */) {
    pack entire state of Fix into one write
    ------------------------------------------------------------------------- */
 
-void FixATC::write_restart(FILE * /* fp */) {
+void FixATC::write_restart(Store /* fp */) {
 
   char *args[2];
   args[0] = utils::strdup("write_restart");

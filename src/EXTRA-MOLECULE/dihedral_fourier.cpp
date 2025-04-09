@@ -329,7 +329,7 @@ void DihedralFourier::coeff(int narg, char **arg)
    proc 0 writes out coeffs to restart file
 ------------------------------------------------------------------------- */
 
-void DihedralFourier::write_restart(FILE *fp)
+void DihedralFourier::write_restart(Store fp)
 {
   fwrite(&nterms[1],sizeof(int),atom->ndihedraltypes,fp);
   for (int i = 1; i <= atom->ndihedraltypes; i++) {
@@ -344,7 +344,7 @@ void DihedralFourier::write_restart(FILE *fp)
    proc 0 reads coeffs from restart file, bcasts them
 ------------------------------------------------------------------------- */
 
-void DihedralFourier::read_restart(FILE *fp)
+void DihedralFourier::read_restart(Store fp)
 {
   allocate();
 

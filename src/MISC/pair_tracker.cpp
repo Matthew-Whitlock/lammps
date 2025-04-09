@@ -448,7 +448,7 @@ double PairTracker::init_one(int i, int j)
   proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairTracker::write_restart(FILE *fp)
+void PairTracker::write_restart(Store fp)
 {
   write_restart_settings(fp);
 
@@ -464,7 +464,7 @@ void PairTracker::write_restart(FILE *fp)
   proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairTracker::read_restart(FILE *fp)
+void PairTracker::read_restart(Store fp)
 {
   read_restart_settings(fp);
   allocate();
@@ -486,7 +486,7 @@ void PairTracker::read_restart(FILE *fp)
   proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairTracker::write_restart_settings(FILE *fp)
+void PairTracker::write_restart_settings(Store fp)
 {
   fwrite(&mix_flag, sizeof(int), 1, fp);
 }
@@ -495,7 +495,7 @@ void PairTracker::write_restart_settings(FILE *fp)
   proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairTracker::read_restart_settings(FILE *fp)
+void PairTracker::read_restart_settings(Store fp)
 {
   if (comm->me == 0) { utils::sfread(FLERR, &mix_flag, sizeof(int), 1, fp, nullptr, error); }
   MPI_Bcast(&mix_flag, 1, MPI_INT, 0, world);

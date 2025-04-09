@@ -161,7 +161,7 @@ double BondMorse::equilibrium_distance(int i)
    proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void BondMorse::write_restart(FILE *fp)
+void BondMorse::write_restart(Store fp)
 {
   fwrite(&d0[1], sizeof(double), atom->nbondtypes, fp);
   fwrite(&alpha[1], sizeof(double), atom->nbondtypes, fp);
@@ -172,7 +172,7 @@ void BondMorse::write_restart(FILE *fp)
    proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void BondMorse::read_restart(FILE *fp)
+void BondMorse::read_restart(Store fp)
 {
   allocate();
 

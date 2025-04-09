@@ -15,6 +15,7 @@
 #define LMP_MODIFY_H
 
 #include "pointers.h"
+#include "store.h"
 
 #include <map>
 
@@ -152,8 +153,8 @@ class Modify : protected Pointers {
   int check_rigid_region_overlap(int, class Region *);
   int check_rigid_list_overlap(int *);
 
-  void write_restart(FILE *);
-  int read_restart(FILE *);
+  void write_restart(Store);
+  int read_restart(Store);
   void restart_deallocate(int);
 
   double memory_usage();

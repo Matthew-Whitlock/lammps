@@ -820,7 +820,7 @@ void FixQBMSST::remap(int flag)
 /* ----------------------------------------------------------------------
    pack entire state of Fix into one write
 ------------------------------------------------------------------------- */
-void FixQBMSST::write_restart(FILE *fp)
+void FixQBMSST::write_restart(Store fp)
 {
   int n = 0;
   double list[5];

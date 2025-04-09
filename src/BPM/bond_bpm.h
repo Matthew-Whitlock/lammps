@@ -31,8 +31,8 @@ class BondBPM : public Bond {
   void init_style() override;
   void settings(int, char **) override;
   double equilibrium_distance(int) override;
-  void write_restart(FILE *) override;
-  void read_restart(FILE *) override;
+  void write_restart(Store) override;
+  void read_restart(Store) override;
   double single(int, double, int, int, double &) override = 0;
 
  protected:

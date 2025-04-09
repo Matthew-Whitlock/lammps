@@ -361,7 +361,7 @@ double AngleClass2P6::equilibrium_angle(int i)
    proc 0 writes out coeffs to restart file
 ------------------------------------------------------------------------- */
 
-void AngleClass2P6::write_restart(FILE *fp)
+void AngleClass2P6::write_restart(Store fp)
 {
   fwrite(&theta0[1],sizeof(double),atom->nangletypes,fp);
   fwrite(&k2[1],sizeof(double),atom->nangletypes,fp);
@@ -384,7 +384,7 @@ void AngleClass2P6::write_restart(FILE *fp)
    proc 0 reads coeffs from restart file, bcasts them
 ------------------------------------------------------------------------- */
 
-void AngleClass2P6::read_restart(FILE *fp)
+void AngleClass2P6::read_restart(Store fp)
 {
   allocate();
 

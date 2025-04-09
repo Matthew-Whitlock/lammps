@@ -725,7 +725,7 @@ double AngleAmoeba::equilibrium_angle(int i)
    proc 0 writes out coeffs to restart file
 ------------------------------------------------------------------------- */
 
-void AngleAmoeba::write_restart(FILE *fp)
+void AngleAmoeba::write_restart(Store fp)
 {
   fwrite(&pflag[1],sizeof(int),atom->nangletypes,fp);
   fwrite(&ubflag[1],sizeof(int),atom->nangletypes,fp);
@@ -750,7 +750,7 @@ void AngleAmoeba::write_restart(FILE *fp)
    proc 0 reads coeffs from restart file, bcasts them
 ------------------------------------------------------------------------- */
 
-void AngleAmoeba::read_restart(FILE *fp)
+void AngleAmoeba::read_restart(Store fp)
 {
   allocate();
 

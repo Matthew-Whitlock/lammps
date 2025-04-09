@@ -193,7 +193,7 @@ void BondHarmonicRestrain::init_style()
    proc 0 writes out coeffs to restart file
 ------------------------------------------------------------------------- */
 
-void BondHarmonicRestrain::write_restart(FILE *fp)
+void BondHarmonicRestrain::write_restart(Store fp)
 {
   fwrite(&natoms, sizeof(bigint), 1, fp);
   fwrite(&k[1], sizeof(double), atom->nbondtypes, fp);
@@ -203,7 +203,7 @@ void BondHarmonicRestrain::write_restart(FILE *fp)
    proc 0 reads coeffs from restart file, bcasts them
 ------------------------------------------------------------------------- */
 
-void BondHarmonicRestrain::read_restart(FILE *fp)
+void BondHarmonicRestrain::read_restart(Store fp)
 {
   allocate();
 

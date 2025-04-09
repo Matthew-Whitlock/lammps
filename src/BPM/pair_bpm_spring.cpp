@@ -268,7 +268,7 @@ double PairBPMSpring::init_one(int i, int j)
    proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairBPMSpring::write_restart(FILE *fp)
+void PairBPMSpring::write_restart(Store fp)
 {
   write_restart_settings(fp);
 
@@ -289,7 +289,7 @@ void PairBPMSpring::write_restart(FILE *fp)
    proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairBPMSpring::read_restart(FILE *fp)
+void PairBPMSpring::read_restart(Store fp)
 {
   read_restart_settings(fp);
   allocate();
@@ -320,7 +320,7 @@ void PairBPMSpring::read_restart(FILE *fp)
    proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairBPMSpring::write_restart_settings(FILE *fp)
+void PairBPMSpring::write_restart_settings(Store fp)
 {
   fwrite(&anharmonic_flag, sizeof(int), 1, fp);
 }
@@ -329,7 +329,7 @@ void PairBPMSpring::write_restart_settings(FILE *fp)
    proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairBPMSpring::read_restart_settings(FILE *fp)
+void PairBPMSpring::read_restart_settings(Store fp)
 {
   if (comm->me == 0)
     utils::sfread(FLERR, &anharmonic_flag, sizeof(int), 1, fp, nullptr, error);

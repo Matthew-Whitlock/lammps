@@ -245,7 +245,7 @@ double PairLJCubic::init_one(int i, int j)
   proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairLJCubic::write_restart(FILE *fp)
+void PairLJCubic::write_restart(Store fp)
 {
   write_restart_settings(fp);
 
@@ -266,7 +266,7 @@ void PairLJCubic::write_restart(FILE *fp)
   proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairLJCubic::read_restart(FILE *fp)
+void PairLJCubic::read_restart(Store fp)
 {
   read_restart_settings(fp);
   allocate();
@@ -296,7 +296,7 @@ void PairLJCubic::read_restart(FILE *fp)
   proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairLJCubic::write_restart_settings(FILE *fp)
+void PairLJCubic::write_restart_settings(Store fp)
 {
   fwrite(&mix_flag, sizeof(int), 1, fp);
 }
@@ -305,7 +305,7 @@ void PairLJCubic::write_restart_settings(FILE *fp)
   proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairLJCubic::read_restart_settings(FILE *fp)
+void PairLJCubic::read_restart_settings(Store fp)
 {
   int me = comm->me;
   if (me == 0) { utils::sfread(FLERR, &mix_flag, sizeof(int), 1, fp, nullptr, error); }

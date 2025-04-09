@@ -278,7 +278,7 @@ double PairLennardMDF::init_one(int i, int j)
   proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairLennardMDF::write_restart(FILE *fp)
+void PairLennardMDF::write_restart(Store fp)
 {
   write_restart_settings(fp);
 
@@ -299,7 +299,7 @@ void PairLennardMDF::write_restart(FILE *fp)
   proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairLennardMDF::read_restart(FILE *fp)
+void PairLennardMDF::read_restart(Store fp)
 {
   read_restart_settings(fp);
   allocate();
@@ -329,7 +329,7 @@ void PairLennardMDF::read_restart(FILE *fp)
   proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairLennardMDF::write_restart_settings(FILE *fp)
+void PairLennardMDF::write_restart_settings(Store fp)
 {
   fwrite(&mix_flag,sizeof(int),1,fp);
   fwrite(&cut_global,sizeof(double),1,fp);
@@ -340,7 +340,7 @@ void PairLennardMDF::write_restart_settings(FILE *fp)
   proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairLennardMDF::read_restart_settings(FILE *fp)
+void PairLennardMDF::read_restart_settings(Store fp)
 {
   int me = comm->me;
   if (me == 0) {

@@ -342,7 +342,7 @@ double AngleHybrid::equilibrium_angle(int i)
    proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void AngleHybrid::write_restart(FILE *fp)
+void AngleHybrid::write_restart(Store fp)
 {
   fwrite(&nstyles, sizeof(int), 1, fp);
 
@@ -359,7 +359,7 @@ void AngleHybrid::write_restart(FILE *fp)
    proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void AngleHybrid::read_restart(FILE *fp)
+void AngleHybrid::read_restart(Store fp)
 {
   int me = comm->me;
   if (me == 0) utils::sfread(FLERR, &nstyles, sizeof(int), 1, fp, nullptr, error);

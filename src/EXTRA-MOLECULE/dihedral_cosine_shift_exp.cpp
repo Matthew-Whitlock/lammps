@@ -284,7 +284,7 @@ void DihedralCosineShiftExp::coeff(int narg, char **arg)
    proc 0 writes out coeffs to restart file
 ------------------------------------------------------------------------- */
 
-void DihedralCosineShiftExp::write_restart(FILE *fp)
+void DihedralCosineShiftExp::write_restart(Store fp)
 {
   fwrite(&umin[1],sizeof(double),atom->ndihedraltypes,fp);
   fwrite(&a[1],sizeof(double),atom->ndihedraltypes,fp);
@@ -297,7 +297,7 @@ void DihedralCosineShiftExp::write_restart(FILE *fp)
    proc 0 reads coeffs from restart file, bcasts them
 ------------------------------------------------------------------------- */
 
-void DihedralCosineShiftExp::read_restart(FILE *fp)
+void DihedralCosineShiftExp::read_restart(Store fp)
 {
   allocate();
 

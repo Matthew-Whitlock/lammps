@@ -808,7 +808,7 @@ double PairMultiLucyRX::splint(double *xa, double *ya, double *y2a, int n, doubl
    proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairMultiLucyRX::write_restart(FILE *fp)
+void PairMultiLucyRX::write_restart(Store fp)
 {
   write_restart_settings(fp);
 }
@@ -817,7 +817,7 @@ void PairMultiLucyRX::write_restart(FILE *fp)
    proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairMultiLucyRX::read_restart(FILE *fp)
+void PairMultiLucyRX::read_restart(Store fp)
 {
   read_restart_settings(fp);
   allocate();
@@ -827,7 +827,7 @@ void PairMultiLucyRX::read_restart(FILE *fp)
    proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairMultiLucyRX::write_restart_settings(FILE *fp)
+void PairMultiLucyRX::write_restart_settings(Store fp)
 {
   fwrite(&tabstyle,sizeof(int),1,fp);
   fwrite(&tablength,sizeof(int),1,fp);
@@ -837,7 +837,7 @@ void PairMultiLucyRX::write_restart_settings(FILE *fp)
    proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairMultiLucyRX::read_restart_settings(FILE *fp)
+void PairMultiLucyRX::read_restart_settings(Store fp)
 {
   if (comm->me == 0) {
     utils::sfread(FLERR,&tabstyle,sizeof(int),1,fp,nullptr,error);

@@ -379,7 +379,7 @@ void DihedralHarmonicKokkos<DeviceType>::coeff(int narg, char **arg)
 ------------------------------------------------------------------------- */
 
 template<class DeviceType>
-void DihedralHarmonicKokkos<DeviceType>::read_restart(FILE *fp)
+void DihedralHarmonicKokkos<DeviceType>::read_restart(Store fp)
 {
   DihedralHarmonic::read_restart(fp);
 

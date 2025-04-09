@@ -332,7 +332,7 @@ double PairBornCoulDSF::init_one(int i, int j)
   proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairBornCoulDSF::write_restart(FILE *fp)
+void PairBornCoulDSF::write_restart(Store fp)
 {
   write_restart_settings(fp);
 
@@ -355,7 +355,7 @@ void PairBornCoulDSF::write_restart(FILE *fp)
   proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairBornCoulDSF::read_restart(FILE *fp)
+void PairBornCoulDSF::read_restart(Store fp)
 {
   read_restart_settings(fp);
 
@@ -390,7 +390,7 @@ void PairBornCoulDSF::read_restart(FILE *fp)
   proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairBornCoulDSF::write_restart_settings(FILE *fp)
+void PairBornCoulDSF::write_restart_settings(Store fp)
 {
   fwrite(&alpha,sizeof(double),1,fp);
   fwrite(&cut_lj_global,sizeof(double),1,fp);
@@ -403,7 +403,7 @@ void PairBornCoulDSF::write_restart_settings(FILE *fp)
   proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairBornCoulDSF::read_restart_settings(FILE *fp)
+void PairBornCoulDSF::read_restart_settings(Store fp)
 {
   if (comm->me == 0) {
     utils::sfread(FLERR,&alpha,sizeof(double),1,fp,nullptr,error);

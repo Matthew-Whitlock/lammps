@@ -327,7 +327,7 @@ double PairLJCutCoulCut::init_one(int i, int j)
   proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairLJCutCoulCut::write_restart(FILE *fp)
+void PairLJCutCoulCut::write_restart(Store fp)
 {
   write_restart_settings(fp);
 
@@ -348,7 +348,7 @@ void PairLJCutCoulCut::write_restart(FILE *fp)
   proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairLJCutCoulCut::read_restart(FILE *fp)
+void PairLJCutCoulCut::read_restart(Store fp)
 {
   read_restart_settings(fp);
   allocate();
@@ -378,7 +378,7 @@ void PairLJCutCoulCut::read_restart(FILE *fp)
   proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairLJCutCoulCut::write_restart_settings(FILE *fp)
+void PairLJCutCoulCut::write_restart_settings(Store fp)
 {
   fwrite(&cut_lj_global, sizeof(double), 1, fp);
   fwrite(&cut_coul_global, sizeof(double), 1, fp);
@@ -391,7 +391,7 @@ void PairLJCutCoulCut::write_restart_settings(FILE *fp)
   proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairLJCutCoulCut::read_restart_settings(FILE *fp)
+void PairLJCutCoulCut::read_restart_settings(Store fp)
 {
   if (comm->me == 0) {
     utils::sfread(FLERR, &cut_lj_global, sizeof(double), 1, fp, nullptr, error);

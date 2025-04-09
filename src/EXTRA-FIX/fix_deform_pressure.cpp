@@ -859,7 +859,7 @@ void FixDeformPressure::apply_box()
    write Set data to restart file
 ------------------------------------------------------------------------- */
 
-void FixDeformPressure::write_restart(FILE *fp)
+void FixDeformPressure::write_restart(Store fp)
 {
   if (comm->me == 0) {
     int size = 7 * sizeof(Set) + 7 * sizeof(SetExtra);

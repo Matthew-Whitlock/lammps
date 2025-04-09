@@ -806,7 +806,7 @@ double FixAtomSwap::memory_usage()
    pack entire state of Fix into one write
 ------------------------------------------------------------------------- */
 
-void FixAtomSwap::write_restart(FILE *fp)
+void FixAtomSwap::write_restart(Store fp)
 {
   int n = 0;
   double list[6];

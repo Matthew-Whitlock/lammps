@@ -1659,7 +1659,7 @@ void FixPIMDLangevin::compute_totenthalpy()
    pack entire state of Fix into one write
 ------------------------------------------------------------------------- */
 
-void FixPIMDLangevin::write_restart(FILE *fp)
+void FixPIMDLangevin::write_restart(Store fp)
 {
   int nsize = size_restart_global();
 

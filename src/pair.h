@@ -15,6 +15,7 @@
 #define LMP_PAIR_H
 
 #include "pointers.h"    // IWYU pragma: export
+#include "store.h"
 
 namespace LAMMPS_NS {
 
@@ -192,10 +193,10 @@ class Pair : protected Pointers {
   virtual void free_tables();
   virtual void free_disp_tables();
 
-  virtual void write_restart(FILE *);
-  virtual void read_restart(FILE *);
-  virtual void write_restart_settings(FILE *) {}
-  virtual void read_restart_settings(FILE *) {}
+  virtual void write_restart(Store);
+  virtual void read_restart(Store);
+  virtual void write_restart_settings(Store) {}
+  virtual void read_restart_settings(Store) {}
   virtual void write_data(FILE *) {}
   virtual void write_data_all(FILE *) {}
 

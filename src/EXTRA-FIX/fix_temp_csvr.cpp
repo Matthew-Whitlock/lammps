@@ -332,7 +332,7 @@ double FixTempCSVR::compute_scalar()
    pack entire state of Fix into one write
 ------------------------------------------------------------------------- */
 
-void FixTempCSVR::write_restart(FILE *fp)
+void FixTempCSVR::write_restart(Store fp)
 {
   int nsize = PRNGSIZE*comm->nprocs+2; // pRNG state per proc + nprocs + energy
   double *list = nullptr;

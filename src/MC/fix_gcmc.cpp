@@ -2561,7 +2561,7 @@ double FixGCMC::memory_usage()
    pack entire state of Fix into one write
 ------------------------------------------------------------------------- */
 
-void FixGCMC::write_restart(FILE *fp)
+void FixGCMC::write_restart(Store fp)
 {
   int n = 0;
   double list[12];

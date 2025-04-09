@@ -1454,7 +1454,7 @@ void Modify::addstep_compute_all(bigint newstep)
    (2) fixes that store per-atom quantities
 ------------------------------------------------------------------------- */
 
-void Modify::write_restart(FILE *fp)
+void Modify::write_restart(Store fp)
 {
   int me = comm->me;
 
@@ -1507,7 +1507,7 @@ void Modify::write_restart(FILE *fp)
    return maxsize of extra info that will be stored with any atom
 ------------------------------------------------------------------------- */
 
-int Modify::read_restart(FILE *fp)
+int Modify::read_restart(Store fp)
 {
   // nfix_restart_global = # of restart entries with global state info
 

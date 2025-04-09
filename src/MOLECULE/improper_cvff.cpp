@@ -301,7 +301,7 @@ void ImproperCvff::coeff(int narg, char **arg)
    proc 0 writes out coeffs to restart file
 ------------------------------------------------------------------------- */
 
-void ImproperCvff::write_restart(FILE *fp)
+void ImproperCvff::write_restart(Store fp)
 {
   fwrite(&k[1], sizeof(double), atom->nimpropertypes, fp);
   fwrite(&sign[1], sizeof(int), atom->nimpropertypes, fp);
@@ -312,7 +312,7 @@ void ImproperCvff::write_restart(FILE *fp)
    proc 0 reads coeffs from restart file, bcasts them
 ------------------------------------------------------------------------- */
 
-void ImproperCvff::read_restart(FILE *fp)
+void ImproperCvff::read_restart(Store fp)
 {
   allocate();
 

@@ -377,7 +377,7 @@ double PairNMCutCoulLong::init_one(int i, int j)
   proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairNMCutCoulLong::write_restart(FILE *fp)
+void PairNMCutCoulLong::write_restart(Store fp)
 {
   write_restart_settings(fp);
 
@@ -399,7 +399,7 @@ void PairNMCutCoulLong::write_restart(FILE *fp)
   proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairNMCutCoulLong::read_restart(FILE *fp)
+void PairNMCutCoulLong::read_restart(Store fp)
 {
   read_restart_settings(fp);
 
@@ -432,7 +432,7 @@ void PairNMCutCoulLong::read_restart(FILE *fp)
   proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairNMCutCoulLong::write_restart_settings(FILE *fp)
+void PairNMCutCoulLong::write_restart_settings(Store fp)
 {
   fwrite(&cut_lj_global,sizeof(double),1,fp);
   fwrite(&cut_coul,sizeof(double),1,fp);
@@ -447,7 +447,7 @@ void PairNMCutCoulLong::write_restart_settings(FILE *fp)
   proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairNMCutCoulLong::read_restart_settings(FILE *fp)
+void PairNMCutCoulLong::read_restart_settings(Store fp)
 {
   if (comm->me == 0) {
     utils::sfread(FLERR,&cut_lj_global,sizeof(double),1,fp,nullptr,error);

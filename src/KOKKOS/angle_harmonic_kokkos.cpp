@@ -278,7 +278,7 @@ void AngleHarmonicKokkos<DeviceType>::coeff(int narg, char **arg)
 ------------------------------------------------------------------------- */
 
 template<class DeviceType>
-void AngleHarmonicKokkos<DeviceType>::read_restart(FILE *fp)
+void AngleHarmonicKokkos<DeviceType>::read_restart(Store fp)
 {
   AngleHarmonic::read_restart(fp);
 

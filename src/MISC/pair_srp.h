@@ -35,10 +35,10 @@ class PairSRP : public Pair {
   double init_one(int, int) override;
   void write_data(FILE *) override;
   void write_data_all(FILE *) override;
-  void write_restart(FILE *) override;
-  void read_restart(FILE *) override;
-  void write_restart_settings(FILE *) override;
-  void read_restart_settings(FILE *) override;
+  void write_restart(Store) override;
+  void read_restart(Store) override;
+  void write_restart_settings(Store) override;
+  void read_restart_settings(Store) override;
 
  protected:
   inline void onetwoexclude(int *&, int &, int *&, int *&, int **&);

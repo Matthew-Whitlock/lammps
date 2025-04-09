@@ -289,7 +289,7 @@ void DihedralHelix::coeff(int narg, char **arg)
    proc 0 writes out coeffs to restart file
 ------------------------------------------------------------------------- */
 
-void DihedralHelix::write_restart(FILE *fp)
+void DihedralHelix::write_restart(Store fp)
 {
   fwrite(&aphi[1],sizeof(double),atom->ndihedraltypes,fp);
   fwrite(&bphi[1],sizeof(double),atom->ndihedraltypes,fp);
@@ -300,7 +300,7 @@ void DihedralHelix::write_restart(FILE *fp)
    proc 0 reads coeffs from restart file, bcasts them
 ------------------------------------------------------------------------- */
 
-void DihedralHelix::read_restart(FILE *fp)
+void DihedralHelix::read_restart(Store fp)
 {
   allocate();
 

@@ -1284,7 +1284,7 @@ double FixMove::memory_usage()
    pack entire state of Fix into one write
 ------------------------------------------------------------------------- */
 
-void FixMove::write_restart(FILE *fp)
+void FixMove::write_restart(Store fp)
 {
   int n = 0;
   double list[1];

@@ -272,7 +272,7 @@ double PairGaussCut::init_one(int i, int j)
    proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairGaussCut::write_restart(FILE *fp)
+void PairGaussCut::write_restart(Store fp)
 {
   write_restart_settings(fp);
 
@@ -293,7 +293,7 @@ void PairGaussCut::write_restart(FILE *fp)
    proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairGaussCut::read_restart(FILE *fp)
+void PairGaussCut::read_restart(Store fp)
 {
   read_restart_settings(fp);
   allocate();
@@ -323,7 +323,7 @@ void PairGaussCut::read_restart(FILE *fp)
    proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairGaussCut::write_restart_settings(FILE *fp)
+void PairGaussCut::write_restart_settings(Store fp)
 {
   fwrite(&cut_global,sizeof(double),1,fp);
   fwrite(&offset_flag,sizeof(int),1,fp);
@@ -334,7 +334,7 @@ void PairGaussCut::write_restart_settings(FILE *fp)
    proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairGaussCut::read_restart_settings(FILE *fp)
+void PairGaussCut::read_restart_settings(Store fp)
 {
   int me = comm->me;
   if (me == 0) {

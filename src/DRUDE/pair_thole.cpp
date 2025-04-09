@@ -284,7 +284,7 @@ double PairThole::init_one(int i, int j)
   proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairThole::write_restart(FILE *fp)
+void PairThole::write_restart(Store fp)
 {
   write_restart_settings(fp);
 
@@ -304,7 +304,7 @@ void PairThole::write_restart(FILE *fp)
   proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairThole::read_restart(FILE *fp)
+void PairThole::read_restart(Store fp)
 {
   read_restart_settings(fp);
   allocate();
@@ -334,7 +334,7 @@ void PairThole::read_restart(FILE *fp)
   proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairThole::write_restart_settings(FILE *fp)
+void PairThole::write_restart_settings(Store fp)
 {
   fwrite(&thole_global,sizeof(double),1,fp);
   fwrite(&cut_global,sizeof(double),1,fp);
@@ -346,7 +346,7 @@ void PairThole::write_restart_settings(FILE *fp)
   proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairThole::read_restart_settings(FILE *fp)
+void PairThole::read_restart_settings(Store fp)
 {
   if (comm->me == 0) {
     utils::sfread(FLERR,&thole_global,sizeof(double),1,fp,nullptr,error);

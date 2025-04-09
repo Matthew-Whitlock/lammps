@@ -833,7 +833,7 @@ void DihedralClass2Kokkos<DeviceType>::coeff(int narg, char **arg)
 ------------------------------------------------------------------------- */
 
 template<class DeviceType>
-void DihedralClass2Kokkos<DeviceType>::read_restart(FILE *fp)
+void DihedralClass2Kokkos<DeviceType>::read_restart(Store fp)
 {
   DihedralClass2::read_restart(fp);
 

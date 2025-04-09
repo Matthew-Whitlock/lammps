@@ -43,10 +43,10 @@ class PairSpinDipoleLong : public PairSpin {
   void compute_long(int, int, double *, double *, double *, double *, double *);
   void compute_long_mech(int, int, double *, double *, double *, double *, double *);
 
-  void write_restart(FILE *) override;
-  void read_restart(FILE *) override;
-  void write_restart_settings(FILE *) override;
-  void read_restart_settings(FILE *) override;
+  void write_restart(Store) override;
+  void read_restart(Store) override;
+  void write_restart_settings(Store) override;
+  void read_restart_settings(Store) override;
 
   double cut_spin_long_global;    // global long cutoff distance
 

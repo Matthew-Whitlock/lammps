@@ -405,7 +405,7 @@ double PairPeriVES::init_one(int i, int j)
   proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairPeriVES::write_restart(FILE *fp)
+void PairPeriVES::write_restart(Store fp)
 {
   int i,j;
   for (i = 1; i <= atom->ntypes; i++)
@@ -427,7 +427,7 @@ void PairPeriVES::write_restart(FILE *fp)
   proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairPeriVES::read_restart(FILE *fp)
+void PairPeriVES::read_restart(Store fp)
 {
   allocate();
 

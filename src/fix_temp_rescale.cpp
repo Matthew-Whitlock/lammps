@@ -240,7 +240,7 @@ double FixTempRescale::compute_scalar()
    pack entire state of Fix into one write
 ------------------------------------------------------------------------- */
 
-void FixTempRescale::write_restart(FILE *fp)
+void FixTempRescale::write_restart(Store fp)
 {
   int n = 0;
   double list[1];

@@ -807,7 +807,7 @@ void FixAdapt::set_arrays(int i)
    write scale factors for diameter and charge to restart file
 ------------------------------------------------------------------------- */
 
-void FixAdapt::write_restart(FILE *fp)
+void FixAdapt::write_restart(Store fp)
 {
   int size = 2*sizeof(double);
 

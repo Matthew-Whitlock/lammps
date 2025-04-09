@@ -807,7 +807,7 @@ double FixMesoMove::memory_usage () {
    pack entire state of Fix into one write
 ------------------------------------------------------------------------- */
 
-void FixMesoMove::write_restart (FILE *fp) {
+void FixMesoMove::write_restart (Store fp) {
   int n = 0;
   double list[1];
   list[n++] = time_origin;

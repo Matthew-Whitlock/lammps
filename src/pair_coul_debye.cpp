@@ -135,7 +135,7 @@ void PairCoulDebye::settings(int narg, char **arg)
   proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairCoulDebye::write_restart_settings(FILE *fp)
+void PairCoulDebye::write_restart_settings(Store fp)
 {
   fwrite(&cut_global,sizeof(double),1,fp);
   fwrite(&kappa,sizeof(double),1,fp);
@@ -147,7 +147,7 @@ void PairCoulDebye::write_restart_settings(FILE *fp)
   proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairCoulDebye::read_restart_settings(FILE *fp)
+void PairCoulDebye::read_restart_settings(Store fp)
 {
   if (comm->me == 0) {
     utils::sfread(FLERR,&cut_global,sizeof(double),1,fp,nullptr,error);

@@ -302,7 +302,7 @@ double PairATM::init_one(int i, int j)
    proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairATM::write_restart(FILE *fp)
+void PairATM::write_restart(Store fp)
 {
   write_restart_settings(fp);
 
@@ -321,7 +321,7 @@ void PairATM::write_restart(FILE *fp)
    proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairATM::read_restart(FILE *fp)
+void PairATM::read_restart(Store fp)
 {
   read_restart_settings(fp);
   allocate();
@@ -344,7 +344,7 @@ void PairATM::read_restart(FILE *fp)
    proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairATM::write_restart_settings(FILE *fp)
+void PairATM::write_restart_settings(Store fp)
 {
   fwrite(&cut_global,sizeof(double),1,fp);
   fwrite(&cut_triple,sizeof(double),1,fp);
@@ -354,7 +354,7 @@ void PairATM::write_restart_settings(FILE *fp)
    proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairATM::read_restart_settings(FILE *fp)
+void PairATM::read_restart_settings(Store fp)
 {
   int me = comm->me;
   if (me == 0) {

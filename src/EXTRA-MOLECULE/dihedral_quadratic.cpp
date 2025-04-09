@@ -295,7 +295,7 @@ void DihedralQuadratic::coeff(int narg, char **arg)
    proc 0 writes out coeffs to restart file
 ------------------------------------------------------------------------- */
 
-void DihedralQuadratic::write_restart(FILE *fp)
+void DihedralQuadratic::write_restart(Store fp)
 {
   fwrite(&k[1],sizeof(double),atom->ndihedraltypes,fp);
   fwrite(&phi0[1],sizeof(double),atom->ndihedraltypes,fp);
@@ -305,7 +305,7 @@ void DihedralQuadratic::write_restart(FILE *fp)
    proc 0 reads coeffs from restart file, bcasts them
 ------------------------------------------------------------------------- */
 
-void DihedralQuadratic::read_restart(FILE *fp)
+void DihedralQuadratic::read_restart(Store fp)
 {
   allocate();
 

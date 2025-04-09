@@ -429,7 +429,7 @@ void DihedralCharmmfsw::init_style()
    proc 0 writes out coeffs to restart file
 ------------------------------------------------------------------------- */
 
-void DihedralCharmmfsw::write_restart(FILE *fp)
+void DihedralCharmmfsw::write_restart(Store fp)
 {
   fwrite(&k[1], sizeof(double), atom->ndihedraltypes, fp);
   fwrite(&multiplicity[1], sizeof(int), atom->ndihedraltypes, fp);
@@ -442,7 +442,7 @@ void DihedralCharmmfsw::write_restart(FILE *fp)
    proc 0 reads coeffs from restart file, bcasts them
 ------------------------------------------------------------------------- */
 
-void DihedralCharmmfsw::read_restart(FILE *fp)
+void DihedralCharmmfsw::read_restart(Store fp)
 {
   allocate();
 

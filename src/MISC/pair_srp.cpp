@@ -660,7 +660,7 @@ void PairSRP::write_data_all(FILE *fp)
    proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairSRP::write_restart(FILE *fp)
+void PairSRP::write_restart(Store fp)
 {
   write_restart_settings(fp);
 
@@ -679,7 +679,7 @@ void PairSRP::write_restart(FILE *fp)
    proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairSRP::read_restart(FILE *fp)
+void PairSRP::read_restart(Store fp)
 {
   read_restart_settings(fp);
   allocate();
@@ -704,7 +704,7 @@ void PairSRP::read_restart(FILE *fp)
    proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairSRP::write_restart_settings(FILE *fp)
+void PairSRP::write_restart_settings(Store fp)
 {
   fwrite(&cut_global,sizeof(double),1,fp);
   fwrite(&bptype,sizeof(int),1,fp);
@@ -718,7 +718,7 @@ void PairSRP::write_restart_settings(FILE *fp)
    proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairSRP::read_restart_settings(FILE *fp)
+void PairSRP::read_restart_settings(Store fp)
 {
   if (comm->me == 0) {
     utils::sfread(FLERR,&cut_global,sizeof(double),1,fp,nullptr,error);

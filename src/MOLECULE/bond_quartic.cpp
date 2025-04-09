@@ -255,7 +255,7 @@ double BondQuartic::equilibrium_distance(int /*i*/)
    proc 0 writes out coeffs to restart file
 ------------------------------------------------------------------------- */
 
-void BondQuartic::write_restart(FILE *fp)
+void BondQuartic::write_restart(Store fp)
 {
   fwrite(&k[1], sizeof(double), atom->nbondtypes, fp);
   fwrite(&b1[1], sizeof(double), atom->nbondtypes, fp);
@@ -268,7 +268,7 @@ void BondQuartic::write_restart(FILE *fp)
    proc 0 reads coeffs from restart file, bcasts them
 ------------------------------------------------------------------------- */
 
-void BondQuartic::read_restart(FILE *fp)
+void BondQuartic::read_restart(Store fp)
 {
   allocate();
 

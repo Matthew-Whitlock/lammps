@@ -224,7 +224,7 @@ void BondHarmonicKokkos<DeviceType>::coeff(int narg, char **arg)
 ------------------------------------------------------------------------- */
 
 template<class DeviceType>
-void BondHarmonicKokkos<DeviceType>::read_restart(FILE *fp)
+void BondHarmonicKokkos<DeviceType>::read_restart(Store fp)
 {
   BondHarmonic::read_restart(fp);
 

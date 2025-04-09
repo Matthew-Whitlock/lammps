@@ -209,7 +209,7 @@ double AngleMWLC::equilibrium_angle(int /*i*/)
    proc 0 writes out coeffs to restart file
 ------------------------------------------------------------------------- */
 
-void AngleMWLC::write_restart(FILE *fp)
+void AngleMWLC::write_restart(Store fp)
 {
   fwrite(&k1[1], sizeof(double), atom->nangletypes, fp);
   fwrite(&k2[1], sizeof(double), atom->nangletypes, fp);
@@ -221,7 +221,7 @@ void AngleMWLC::write_restart(FILE *fp)
    proc 0 reads coeffs from restart file, bcasts them
 ------------------------------------------------------------------------- */
 
-void AngleMWLC::read_restart(FILE *fp)
+void AngleMWLC::read_restart(Store fp)
 {
   allocate();
 

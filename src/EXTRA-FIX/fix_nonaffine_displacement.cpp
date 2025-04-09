@@ -290,7 +290,7 @@ void FixNonaffineDisplacement::post_force(int /*vflag*/)
 
 /* ---------------------------------------------------------------------- */
 
-void FixNonaffineDisplacement::write_restart(FILE *fp)
+void FixNonaffineDisplacement::write_restart(Store fp)
 {
   if (comm->me == 0) {
     int size = sizeof(int);

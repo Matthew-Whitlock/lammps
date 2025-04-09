@@ -748,7 +748,7 @@ void Pair::compute_dummy(int eflag, int vflag)
 
 /* ---------------------------------------------------------------------- */
 
-void Pair::read_restart(FILE *)
+void Pair::read_restart(Store )
 {
   if (comm->me == 0)
     error->warning(FLERR,"Pair style restartinfo set but has no restart support");
@@ -756,7 +756,7 @@ void Pair::read_restart(FILE *)
 
 /* ---------------------------------------------------------------------- */
 
-void Pair::write_restart(FILE *)
+void Pair::write_restart(Store)
 {
   if (comm->me == 0)
     error->warning(FLERR,"Pair style restartinfo set but has no restart support");

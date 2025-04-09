@@ -287,7 +287,7 @@ void DihedralNHarmonic::coeff(int narg, char **arg)
    proc 0 writes out coeffs to restart file
 ------------------------------------------------------------------------- */
 
-void DihedralNHarmonic::write_restart(FILE *fp)
+void DihedralNHarmonic::write_restart(Store fp)
 {
   fwrite(&nterms[1],sizeof(int),atom->ndihedraltypes,fp);
   for (int i = 1; i <= atom->ndihedraltypes; i++)
@@ -298,7 +298,7 @@ void DihedralNHarmonic::write_restart(FILE *fp)
    proc 0 reads coeffs from restart file, bcasts them
 ------------------------------------------------------------------------- */
 
-void DihedralNHarmonic::read_restart(FILE *fp)
+void DihedralNHarmonic::read_restart(Store fp)
 {
   allocate();
 

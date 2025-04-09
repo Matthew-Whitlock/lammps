@@ -872,7 +872,7 @@ void FixColvars::end_of_step()
 
 /* ---------------------------------------------------------------------- */
 
-void FixColvars::write_restart(FILE *fp)
+void FixColvars::write_restart(Store fp)
 {
   if (comm->me == 0) {
     cvm::memory_stream ms;

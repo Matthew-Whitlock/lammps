@@ -256,7 +256,7 @@ double PairLJSmoothLinear::init_one(int i, int j)
    proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairLJSmoothLinear::write_restart(FILE *fp)
+void PairLJSmoothLinear::write_restart(Store fp)
 {
   write_restart_settings(fp);
 
@@ -276,7 +276,7 @@ void PairLJSmoothLinear::write_restart(FILE *fp)
    proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairLJSmoothLinear::read_restart(FILE *fp)
+void PairLJSmoothLinear::read_restart(Store fp)
 {
   read_restart_settings(fp);
   allocate();
@@ -304,7 +304,7 @@ void PairLJSmoothLinear::read_restart(FILE *fp)
    proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairLJSmoothLinear::write_restart_settings(FILE *fp)
+void PairLJSmoothLinear::write_restart_settings(Store fp)
 {
   fwrite(&cut_global,sizeof(double),1,fp);
   fwrite(&mix_flag,sizeof(int),1,fp);
@@ -314,7 +314,7 @@ void PairLJSmoothLinear::write_restart_settings(FILE *fp)
    proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairLJSmoothLinear::read_restart_settings(FILE *fp)
+void PairLJSmoothLinear::read_restart_settings(Store fp)
 {
   int me = comm->me;
   if (me == 0) {

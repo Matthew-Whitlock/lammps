@@ -306,7 +306,7 @@ void ImproperRing ::coeff(int narg, char **arg)
    proc 0 writes out coeffs to restart file
 ------------------------------------------------------------------------- */
 
-void ImproperRing ::write_restart(FILE *fp)
+void ImproperRing ::write_restart(Store fp)
 {
   fwrite(&k[1],sizeof(double),atom->nimpropertypes,fp);
   fwrite(&chi[1],sizeof(double),atom->nimpropertypes,fp);
@@ -316,7 +316,7 @@ void ImproperRing ::write_restart(FILE *fp)
    proc 0 reads coeffs from restart file, bcasts them
 ------------------------------------------------------------------------- */
 
-void ImproperRing::read_restart(FILE *fp)
+void ImproperRing::read_restart(Store fp)
 {
   allocate();
 

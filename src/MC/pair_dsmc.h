@@ -33,10 +33,10 @@ class PairDSMC : public Pair {
   void coeff(int, char **) override;
   void init_style() override;
   double init_one(int, int) override;
-  void write_restart(FILE *) override;
-  void read_restart(FILE *) override;
-  void write_restart_settings(FILE *) override;
-  void read_restart_settings(FILE *) override;
+  void write_restart(Store) override;
+  void read_restart(Store) override;
+  void write_restart_settings(Store) override;
+  void read_restart_settings(Store) override;
 
  private:
   double cut_global;

@@ -220,7 +220,7 @@ double AngleQuartic::equilibrium_angle(int i)
    proc 0 writes out coeffs to restart file
 ------------------------------------------------------------------------- */
 
-void AngleQuartic::write_restart(FILE *fp)
+void AngleQuartic::write_restart(Store fp)
 {
   fwrite(&k2[1],sizeof(double),atom->nangletypes,fp);
   fwrite(&k3[1],sizeof(double),atom->nangletypes,fp);
@@ -232,7 +232,7 @@ void AngleQuartic::write_restart(FILE *fp)
    proc 0 reads coeffs from restart file, bcasts them
 ------------------------------------------------------------------------- */
 
-void AngleQuartic::read_restart(FILE *fp)
+void AngleQuartic::read_restart(Store fp)
 {
   allocate();
 

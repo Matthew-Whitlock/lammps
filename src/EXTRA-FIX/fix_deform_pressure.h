@@ -31,7 +31,7 @@ class FixDeformPressure : public FixDeform {
   void init() override;
   void setup(int) override;
   void end_of_step() override;
-  void write_restart(FILE *) override;
+  void write_restart(Store) override;
   void restart(char *buf) override;
   int modify_param(int, char **) override;
 

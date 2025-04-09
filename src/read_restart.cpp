@@ -34,6 +34,7 @@
 #include "pair.h"
 #include "special.h"
 #include "update.h"
+#include "store.h"
 
 #include <cstring>
 

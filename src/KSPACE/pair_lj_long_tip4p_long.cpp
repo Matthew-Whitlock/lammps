@@ -1541,7 +1541,7 @@ double PairLJLongTIP4PLong::init_one(int i, int j)
   proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairLJLongTIP4PLong::write_restart_settings(FILE *fp)
+void PairLJLongTIP4PLong::write_restart_settings(Store fp)
 {
   fwrite(&typeO,sizeof(int),1,fp);
   fwrite(&typeH,sizeof(int),1,fp);
@@ -1563,7 +1563,7 @@ void PairLJLongTIP4PLong::write_restart_settings(FILE *fp)
   proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairLJLongTIP4PLong::read_restart_settings(FILE *fp)
+void PairLJLongTIP4PLong::read_restart_settings(Store fp)
 {
   if (comm->me == 0) {
     utils::sfread(FLERR,&typeO,sizeof(int),1,fp,nullptr,error);

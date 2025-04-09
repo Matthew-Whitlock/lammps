@@ -1232,7 +1232,7 @@ void FixNPTCauchy::remap()
    pack entire state of Fix into one write
 ------------------------------------------------------------------------- */
 
-void FixNPTCauchy::write_restart(FILE *fp)
+void FixNPTCauchy::write_restart(Store fp)
 {
   int nsize = size_restart_global();
 

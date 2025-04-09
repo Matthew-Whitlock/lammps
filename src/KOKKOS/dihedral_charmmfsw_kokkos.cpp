@@ -537,7 +537,7 @@ void DihedralCharmmfswKokkos<DeviceType>::init_style()
 ------------------------------------------------------------------------- */
 
 template<class DeviceType>
-void DihedralCharmmfswKokkos<DeviceType>::read_restart(FILE *fp)
+void DihedralCharmmfswKokkos<DeviceType>::read_restart(Store fp)
 {
   DihedralCharmmfsw::read_restart(fp);
 

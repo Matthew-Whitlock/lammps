@@ -571,7 +571,7 @@ double PairLJRelRes::init_one(int i, int j)
    proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairLJRelRes::write_restart(FILE *fp)
+void PairLJRelRes::write_restart(Store fp)
 {
   write_restart_settings(fp);
 
@@ -596,7 +596,7 @@ void PairLJRelRes::write_restart(FILE *fp)
    proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairLJRelRes::read_restart(FILE *fp)
+void PairLJRelRes::read_restart(Store fp)
 {
   read_restart_settings(fp);
   allocate();
@@ -634,7 +634,7 @@ void PairLJRelRes::read_restart(FILE *fp)
    proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairLJRelRes::write_restart_settings(FILE *fp)
+void PairLJRelRes::write_restart_settings(Store fp)
 {
   fwrite(&cutf_inner_global,sizeof(double),1,fp);
   fwrite(&cutf_global,sizeof(double),1,fp);
@@ -648,7 +648,7 @@ void PairLJRelRes::write_restart_settings(FILE *fp)
    proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairLJRelRes::read_restart_settings(FILE *fp)
+void PairLJRelRes::read_restart_settings(Store fp)
 {
   int me = comm->me;
   if (me == 0) {

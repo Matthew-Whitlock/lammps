@@ -247,7 +247,7 @@ double PairUFM::init_one(int i, int j)
    proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairUFM::write_restart(FILE *fp)
+void PairUFM::write_restart(Store fp)
 {
   write_restart_settings(fp);
 
@@ -268,7 +268,7 @@ void PairUFM::write_restart(FILE *fp)
    proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairUFM::read_restart(FILE *fp)
+void PairUFM::read_restart(Store fp)
 {
   read_restart_settings(fp);
   allocate();
@@ -298,7 +298,7 @@ void PairUFM::read_restart(FILE *fp)
    proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairUFM::write_restart_settings(FILE *fp)
+void PairUFM::write_restart_settings(Store fp)
 {
   fwrite(&cut_global,sizeof(double),1,fp);
   fwrite(&offset_flag,sizeof(int),1,fp);
@@ -309,7 +309,7 @@ void PairUFM::write_restart_settings(FILE *fp)
    proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairUFM::read_restart_settings(FILE *fp)
+void PairUFM::read_restart_settings(Store fp)
 {
   int me = comm->me;
   if (me == 0) {

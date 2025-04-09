@@ -464,7 +464,7 @@ double FixMolSwap::compute_vector(int n)
    pack entire state of Fix into one write
 ------------------------------------------------------------------------- */
 
-void FixMolSwap::write_restart(FILE *fp)
+void FixMolSwap::write_restart(Store fp)
 {
   int n = 0;
   double list[6];

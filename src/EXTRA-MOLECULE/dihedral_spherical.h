@@ -31,8 +31,8 @@ class DihedralSpherical : public Dihedral {
   void compute(int, int) override;
   double CalcGeneralizedForces(int, double, double, double, double *, double *, double *);
   void coeff(int, char **) override;
-  void write_restart(FILE *) override;
-  void read_restart(FILE *) override;
+  void write_restart(Store) override;
+  void read_restart(Store) override;
   void write_data(FILE *) override;
 
  protected:

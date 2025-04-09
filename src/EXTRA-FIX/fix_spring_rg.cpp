@@ -156,7 +156,7 @@ void FixSpringRG::post_force_respa(int vflag, int ilevel, int /*iloop*/)
    pack entire state of Fix into one write
 ------------------------------------------------------------------------- */
 
-void FixSpringRG::write_restart(FILE *fp)
+void FixSpringRG::write_restart(Store fp)
 {
   int n = 0;
   double list[1];

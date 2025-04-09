@@ -98,13 +98,13 @@ void DihedralZero::coeff(int narg, char **arg)
    proc 0 writes out coeffs to restart file
 ------------------------------------------------------------------------- */
 
-void DihedralZero::write_restart(FILE * /*fp*/) {}
+void DihedralZero::write_restart(Store /*fp*/) {}
 
 /* ----------------------------------------------------------------------
    proc 0 reads coeffs from restart file, bcasts them
 ------------------------------------------------------------------------- */
 
-void DihedralZero::read_restart(FILE * /*fp*/)
+void DihedralZero::read_restart(Store /*fp*/)
 {
   allocate();
   for (int i = 1; i <= atom->ndihedraltypes; i++) setflag[i] = 1;

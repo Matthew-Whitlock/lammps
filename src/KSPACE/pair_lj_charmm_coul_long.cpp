@@ -781,7 +781,7 @@ double PairLJCharmmCoulLong::init_one(int i, int j)
   proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairLJCharmmCoulLong::write_restart(FILE *fp)
+void PairLJCharmmCoulLong::write_restart(Store fp)
 {
   write_restart_settings(fp);
 
@@ -802,7 +802,7 @@ void PairLJCharmmCoulLong::write_restart(FILE *fp)
   proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairLJCharmmCoulLong::read_restart(FILE *fp)
+void PairLJCharmmCoulLong::read_restart(Store fp)
 {
   read_restart_settings(fp);
 
@@ -833,7 +833,7 @@ void PairLJCharmmCoulLong::read_restart(FILE *fp)
   proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairLJCharmmCoulLong::write_restart_settings(FILE *fp)
+void PairLJCharmmCoulLong::write_restart_settings(Store fp)
 {
   fwrite(&cut_lj_inner,sizeof(double),1,fp);
   fwrite(&cut_lj,sizeof(double),1,fp);
@@ -848,7 +848,7 @@ void PairLJCharmmCoulLong::write_restart_settings(FILE *fp)
   proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairLJCharmmCoulLong::read_restart_settings(FILE *fp)
+void PairLJCharmmCoulLong::read_restart_settings(Store fp)
 {
   if (comm->me == 0) {
     utils::sfread(FLERR,&cut_lj_inner,sizeof(double),1,fp,nullptr,error);

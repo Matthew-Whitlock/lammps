@@ -32,8 +32,8 @@ class ImproperZero : public Improper {
   void coeff(int, char **) override;
   void settings(int, char **) override;
 
-  void write_restart(FILE *) override;
-  void read_restart(FILE *) override;
+  void write_restart(Store) override;
+  void read_restart(Store) override;
   void write_data(FILE *) override;
 
  protected:

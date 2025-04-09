@@ -432,7 +432,7 @@ double PairGayBerne::init_one(int i, int j)
    proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairGayBerne::write_restart(FILE *fp)
+void PairGayBerne::write_restart(Store fp)
 {
   write_restart_settings(fp);
 
@@ -455,7 +455,7 @@ void PairGayBerne::write_restart(FILE *fp)
    proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairGayBerne::read_restart(FILE *fp)
+void PairGayBerne::read_restart(Store fp)
 {
   read_restart_settings(fp);
   allocate();
@@ -490,7 +490,7 @@ void PairGayBerne::read_restart(FILE *fp)
    proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairGayBerne::write_restart_settings(FILE *fp)
+void PairGayBerne::write_restart_settings(Store fp)
 {
   fwrite(&gamma,sizeof(double),1,fp);
   fwrite(&upsilon,sizeof(double),1,fp);
@@ -504,7 +504,7 @@ void PairGayBerne::write_restart_settings(FILE *fp)
    proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairGayBerne::read_restart_settings(FILE *fp)
+void PairGayBerne::read_restart_settings(Store fp)
 {
   int me = comm->me;
   if (me == 0) {

@@ -238,7 +238,7 @@ void FixSpringChunk::min_post_force(int vflag)
    writ number of chunks and position of original COM into restart
 ------------------------------------------------------------------------- */
 
-void FixSpringChunk::write_restart(FILE *fp)
+void FixSpringChunk::write_restart(Store fp)
 {
   double n = nchunk;
 

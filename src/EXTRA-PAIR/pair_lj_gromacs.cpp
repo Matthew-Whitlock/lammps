@@ -305,7 +305,7 @@ double PairLJGromacs::init_one(int i, int j)
   proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairLJGromacs::write_restart(FILE *fp)
+void PairLJGromacs::write_restart(Store fp)
 {
   write_restart_settings(fp);
 
@@ -326,7 +326,7 @@ void PairLJGromacs::write_restart(FILE *fp)
   proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairLJGromacs::read_restart(FILE *fp)
+void PairLJGromacs::read_restart(Store fp)
 {
   read_restart_settings(fp);
   allocate();
@@ -356,7 +356,7 @@ void PairLJGromacs::read_restart(FILE *fp)
   proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairLJGromacs::write_restart_settings(FILE *fp)
+void PairLJGromacs::write_restart_settings(Store fp)
 {
   fwrite(&cut_inner_global, sizeof(double), 1, fp);
   fwrite(&cut_global, sizeof(double), 1, fp);
@@ -368,7 +368,7 @@ void PairLJGromacs::write_restart_settings(FILE *fp)
   proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairLJGromacs::read_restart_settings(FILE *fp)
+void PairLJGromacs::read_restart_settings(Store fp)
 {
   int me = comm->me;
   if (me == 0) {

@@ -383,7 +383,7 @@ void PairSMATBSingle::unpack_reverse_comm(int n, int *list, double *buf)
 /* ---------------------------------------------------------------------- */
 
 //write binary data of this simulation:
-void PairSMATBSingle::write_restart_settings(FILE *fp)
+void PairSMATBSingle::write_restart_settings(Store fp)
 {
   fwrite(&offset_flag, sizeof(int), 1, fp);
   fwrite(&mix_flag, sizeof(int), 1, fp);
@@ -392,7 +392,7 @@ void PairSMATBSingle::write_restart_settings(FILE *fp)
 
 /* ---------------------------------------------------------------------- */
 
-void PairSMATBSingle::read_restart_settings(FILE *fp)
+void PairSMATBSingle::read_restart_settings(Store fp)
 {
   int me = comm->me;
   if (me == 0) {
@@ -407,7 +407,7 @@ void PairSMATBSingle::read_restart_settings(FILE *fp)
 
 /* ---------------------------------------------------------------------- */
 
-void PairSMATBSingle::write_restart(FILE *fp)
+void PairSMATBSingle::write_restart(Store fp)
 {
   write_restart_settings(fp);
 
@@ -430,7 +430,7 @@ void PairSMATBSingle::write_restart(FILE *fp)
 
 /* ---------------------------------------------------------------------- */
 
-void PairSMATBSingle::read_restart(FILE *fp)
+void PairSMATBSingle::read_restart(Store fp)
 {
   read_restart_settings(fp);
   allocate();

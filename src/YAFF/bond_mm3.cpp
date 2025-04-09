@@ -168,7 +168,7 @@ double BondMM3::equilibrium_distance(int i)
    proc 0 writes out coeffs to restart file
 ------------------------------------------------------------------------- */
 
-void BondMM3::write_restart(FILE *fp)
+void BondMM3::write_restart(Store fp)
 {
   fwrite(&k2[1],sizeof(double),atom->nbondtypes,fp);
   fwrite(&r0[1],sizeof(double),atom->nbondtypes,fp);
@@ -178,7 +178,7 @@ void BondMM3::write_restart(FILE *fp)
    proc 0 reads coeffs from restart file, bcasts them
 ------------------------------------------------------------------------- */
 
-void BondMM3::read_restart(FILE *fp)
+void BondMM3::read_restart(Store fp)
 {
   allocate();
 

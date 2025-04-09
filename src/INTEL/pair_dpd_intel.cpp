@@ -582,7 +582,7 @@ void PairDPDIntel::ForceConst<flt_t>::set_ntypes(const int ntypes,
    proc 0 reads from restart file, bcasts
    ------------------------------------------------------------------------- */
 
-void PairDPDIntel::read_restart_settings(FILE *fp)
+void PairDPDIntel::read_restart_settings(Store fp)
 {
   #if defined(_OPENMP)
   if (_nrandom_thread) {

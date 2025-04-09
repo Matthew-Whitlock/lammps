@@ -1109,7 +1109,7 @@ double FixWidom::memory_usage()
    pack entire state of Fix into one write
 ------------------------------------------------------------------------- */
 
-void FixWidom::write_restart(FILE *fp)
+void FixWidom::write_restart(Store fp)
 {
   int n = 0;
   double list[3];

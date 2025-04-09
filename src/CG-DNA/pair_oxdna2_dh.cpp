@@ -452,7 +452,7 @@ double PairOxdna2Dh::init_one(int i, int j)
    proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairOxdna2Dh::write_restart(FILE *fp)
+void PairOxdna2Dh::write_restart(Store fp)
 {
   write_restart_settings(fp);
 
@@ -476,7 +476,7 @@ void PairOxdna2Dh::write_restart(FILE *fp)
    proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairOxdna2Dh::read_restart(FILE *fp)
+void PairOxdna2Dh::read_restart(Store fp)
 {
   read_restart_settings(fp);
   allocate();
@@ -512,7 +512,7 @@ void PairOxdna2Dh::read_restart(FILE *fp)
    proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairOxdna2Dh::write_restart_settings(FILE *fp)
+void PairOxdna2Dh::write_restart_settings(Store fp)
 {
   fwrite(&offset_flag,sizeof(int),1,fp);
   fwrite(&mix_flag,sizeof(int),1,fp);
@@ -523,7 +523,7 @@ void PairOxdna2Dh::write_restart_settings(FILE *fp)
    proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairOxdna2Dh::read_restart_settings(FILE *fp)
+void PairOxdna2Dh::read_restart_settings(Store fp)
 {
   int me = comm->me;
   if (me == 0) {

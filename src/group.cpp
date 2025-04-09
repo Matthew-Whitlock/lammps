@@ -730,7 +730,7 @@ void Group::molring(int n, char *cbuf, void *ptr)
    only called by proc 0
 ------------------------------------------------------------------------- */
 
-void Group::write_restart(FILE *fp)
+void Group::write_restart(Store fp)
 {
   fwrite(&ngroup, sizeof(int), 1, fp);
 
@@ -758,7 +758,7 @@ void Group::write_restart(FILE *fp)
    proc 0 reads, bcast to all procs
 ------------------------------------------------------------------------- */
 
-void Group::read_restart(FILE *fp)
+void Group::read_restart(Store fp)
 {
   int i, n;
 

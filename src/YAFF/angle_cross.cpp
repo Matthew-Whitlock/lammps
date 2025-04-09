@@ -261,7 +261,7 @@ double AngleCross::equilibrium_angle(int i)
    proc 0 writes out coeffs to restart file
 ------------------------------------------------------------------------- */
 
-void AngleCross::write_restart(FILE *fp)
+void AngleCross::write_restart(Store fp)
 {
   fwrite(&kss[1],sizeof(double),atom->nangletypes,fp);
   fwrite(&kbs0[1],sizeof(double),atom->nangletypes,fp);
@@ -275,7 +275,7 @@ void AngleCross::write_restart(FILE *fp)
    proc 0 reads coeffs from restart file, bcasts them
 ------------------------------------------------------------------------- */
 
-void AngleCross::read_restart(FILE *fp)
+void AngleCross::read_restart(Store fp)
 {
   allocate();
 

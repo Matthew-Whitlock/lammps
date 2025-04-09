@@ -540,7 +540,7 @@ void FixPeriNeigh::unpack_forward_comm(int n, int first, double *buf)
    pack entire state of Fix into one write
 ------------------------------------------------------------------------- */
 
-void FixPeriNeigh::write_restart(FILE *fp)
+void FixPeriNeigh::write_restart(Store fp)
 {
   int n = 0;
   double list[2];

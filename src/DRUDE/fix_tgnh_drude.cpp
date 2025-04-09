@@ -1246,7 +1246,7 @@ void FixTGNHDrude::remap()
    pack entire state of Fix into one write
 ------------------------------------------------------------------------- */
 
-void FixTGNHDrude::write_restart(FILE *fp)
+void FixTGNHDrude::write_restart(Store fp)
 {
   int nsize = size_restart_global();
 

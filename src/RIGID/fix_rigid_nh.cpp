@@ -1082,7 +1082,7 @@ void FixRigidNH::nh_epsilon_dot()
    pack entire state of Fix into one write
 ------------------------------------------------------------------------- */
 
-void FixRigidNH::write_restart(FILE *fp)
+void FixRigidNH::write_restart(Store fp)
 {
   if (tstat_flag == 0 && pstat_flag == 0) return;
 

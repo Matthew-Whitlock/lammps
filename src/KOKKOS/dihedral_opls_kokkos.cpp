@@ -384,7 +384,7 @@ void DihedralOPLSKokkos<DeviceType>::coeff(int narg, char **arg)
 ------------------------------------------------------------------------- */
 
 template<class DeviceType>
-void DihedralOPLSKokkos<DeviceType>::read_restart(FILE *fp)
+void DihedralOPLSKokkos<DeviceType>::read_restart(Store fp)
 {
   DihedralOPLS::read_restart(fp);
 

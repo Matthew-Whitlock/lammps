@@ -590,7 +590,7 @@ double PairMIECut::init_one(int i, int j)
    proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairMIECut::write_restart(FILE *fp)
+void PairMIECut::write_restart(Store fp)
 {
   write_restart_settings(fp);
 
@@ -612,7 +612,7 @@ void PairMIECut::write_restart(FILE *fp)
    proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairMIECut::read_restart(FILE *fp)
+void PairMIECut::read_restart(Store fp)
 {
   read_restart_settings(fp);
   allocate();
@@ -644,7 +644,7 @@ void PairMIECut::read_restart(FILE *fp)
    proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairMIECut::write_restart_settings(FILE *fp)
+void PairMIECut::write_restart_settings(Store fp)
 {
   fwrite(&cut_global,sizeof(double),1,fp);
   fwrite(&offset_flag,sizeof(int),1,fp);
@@ -656,7 +656,7 @@ void PairMIECut::write_restart_settings(FILE *fp)
    proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairMIECut::read_restart_settings(FILE *fp)
+void PairMIECut::read_restart_settings(Store fp)
 {
   int me = comm->me;
   if (me == 0) {

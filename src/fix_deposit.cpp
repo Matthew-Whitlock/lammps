@@ -900,7 +900,7 @@ double FixDeposit::compute_scalar()
    pack entire state of Fix into one write
 ------------------------------------------------------------------------- */
 
-void FixDeposit::write_restart(FILE *fp)
+void FixDeposit::write_restart(Store fp)
 {
   int n = 0;
   double list[5];

@@ -29,7 +29,7 @@ class FixWallGranRegion : public FixWallGran {
   FixWallGranRegion(class LAMMPS *, int, char **);
   ~FixWallGranRegion() override;
   void post_force(int) override;
-  void write_restart(FILE *) override;
+  void write_restart(Store) override;
   void restart(char *) override;
   void init() override;
 

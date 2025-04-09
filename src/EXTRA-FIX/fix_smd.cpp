@@ -428,7 +428,7 @@ void FixSMD::smd_couple()
 
 /* ---------------------------------------------------------------------- */
 
-void FixSMD::write_restart(FILE *fp)
+void FixSMD::write_restart(Store fp)
 {
   static constexpr int RESTART_ITEMS = 5;
   double buf[RESTART_ITEMS], fsign;

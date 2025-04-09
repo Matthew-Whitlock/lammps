@@ -36,7 +36,7 @@ class FixUpdateSpecialBonds : public Fix {
   void post_run() override;
   void add_broken_bond(int, int);
   void add_created_bond(int, int);
-  void write_restart(FILE *) override;
+  void write_restart(Store) override;
 
  protected:
   // Create two arrays to store bonds broken this timestep (new)

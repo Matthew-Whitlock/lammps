@@ -34,10 +34,10 @@ class PairOxrna2Stk : public Pair {
   void init_style() override;
   void init_list(int, class NeighList *) override;
   double init_one(int, int) override;
-  void write_restart(FILE *) override;
-  void read_restart(FILE *) override;
-  void write_restart_settings(FILE *) override;
-  void read_restart_settings(FILE *) override;
+  void write_restart(Store) override;
+  void read_restart(Store) override;
+  void write_restart_settings(Store) override;
+  void read_restart_settings(Store) override;
   void write_data(FILE *) override;
   void write_data_all(FILE *) override;
   void *extract(const char *, int &) override;

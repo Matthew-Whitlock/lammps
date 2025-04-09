@@ -15,6 +15,7 @@
 #define LMP_GROUP_H
 
 #include "pointers.h"
+#include "store.h"
 
 #include <map>
 
@@ -38,8 +39,8 @@ class Group : protected Pointers {
   int find(const std::string &);              // lookup name in list of groups
   int find_or_create(const char *);           // lookup name or create new group
   int get_bitmask_by_id(const std::string &, int, const std::string &, const std::string &);
-  void write_restart(FILE *);
-  void read_restart(FILE *);
+  void write_restart(Store);
+  void read_restart(Store);
 
   bigint count_all();             // count atoms in group all
   bigint count(int);              // count atoms in group

@@ -293,7 +293,7 @@ double PairNMCut::init_one(int i, int j)
   proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairNMCut::write_restart(FILE *fp)
+void PairNMCut::write_restart(Store fp)
 {
   write_restart_settings(fp);
 
@@ -315,7 +315,7 @@ void PairNMCut::write_restart(FILE *fp)
   proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairNMCut::read_restart(FILE *fp)
+void PairNMCut::read_restart(Store fp)
 {
   read_restart_settings(fp);
   allocate();
@@ -347,7 +347,7 @@ void PairNMCut::read_restart(FILE *fp)
   proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairNMCut::write_restart_settings(FILE *fp)
+void PairNMCut::write_restart_settings(Store fp)
 {
   fwrite(&cut_global,sizeof(double),1,fp);
   fwrite(&offset_flag,sizeof(int),1,fp);
@@ -359,7 +359,7 @@ void PairNMCut::write_restart_settings(FILE *fp)
   proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairNMCut::read_restart_settings(FILE *fp)
+void PairNMCut::read_restart_settings(Store fp)
 {
   if (comm->me == 0) {
     utils::sfread(FLERR,&cut_global,sizeof(double),1,fp,nullptr,error);

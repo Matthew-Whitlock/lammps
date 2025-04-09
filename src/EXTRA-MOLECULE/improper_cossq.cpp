@@ -277,7 +277,7 @@ void ImproperCossq::coeff(int narg, char **arg)
 /* ----------------------------------------------------------------------
    proc 0 writes out coeffs to restart file
 ------------------------------------------------------------------------- */
-void ImproperCossq::write_restart(FILE *fp)
+void ImproperCossq::write_restart(Store fp)
 {
   fwrite(&k[1],sizeof(double),atom->nimpropertypes,fp);
   fwrite(&chi[1],sizeof(double),atom->nimpropertypes,fp);
@@ -286,7 +286,7 @@ void ImproperCossq::write_restart(FILE *fp)
 /* ----------------------------------------------------------------------
    proc 0 reads coeffs from restart file, bcasts them
 ------------------------------------------------------------------------- */
-void ImproperCossq::read_restart(FILE *fp)
+void ImproperCossq::read_restart(Store fp)
 {
   allocate();
 

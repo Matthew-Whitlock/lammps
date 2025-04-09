@@ -258,7 +258,7 @@ double PairWFCut::init_one(int i, int j)
   proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairWFCut::write_restart(FILE *fp)
+void PairWFCut::write_restart(Store fp)
 {
   write_restart_settings(fp);
 
@@ -280,7 +280,7 @@ void PairWFCut::write_restart(FILE *fp)
   proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairWFCut::read_restart(FILE *fp)
+void PairWFCut::read_restart(Store fp)
 {
   read_restart_settings(fp);
   allocate();
@@ -312,7 +312,7 @@ void PairWFCut::read_restart(FILE *fp)
   proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairWFCut::write_restart_settings(FILE *fp)
+void PairWFCut::write_restart_settings(Store fp)
 {
   fwrite(&cut_global,sizeof(double),1,fp);
   fwrite(&mix_flag,sizeof(int),1,fp);
@@ -322,7 +322,7 @@ void PairWFCut::write_restart_settings(FILE *fp)
   proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairWFCut::read_restart_settings(FILE *fp)
+void PairWFCut::read_restart_settings(Store fp)
 {
   if (comm->me == 0) {
     utils::sfread(FLERR, &cut_global,sizeof(double),1,fp,nullptr,error);

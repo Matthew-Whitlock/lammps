@@ -566,7 +566,7 @@ void ImproperClass2::coeff(int narg, char **arg)
    proc 0 writes out coeffs to restart file
 ------------------------------------------------------------------------- */
 
-void ImproperClass2::write_restart(FILE *fp)
+void ImproperClass2::write_restart(Store fp)
 {
   fwrite(&k0[1],sizeof(double),atom->nimpropertypes,fp);
   fwrite(&chi0[1],sizeof(double),atom->nimpropertypes,fp);
@@ -583,7 +583,7 @@ void ImproperClass2::write_restart(FILE *fp)
    proc 0 reads coeffs from restart file, bcasts them
 ------------------------------------------------------------------------- */
 
-void ImproperClass2::read_restart(FILE *fp)
+void ImproperClass2::read_restart(Store fp)
 {
   allocate();
 

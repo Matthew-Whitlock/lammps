@@ -519,7 +519,7 @@ void DihedralCharmmKokkos<DeviceType>::init_style()
 ------------------------------------------------------------------------- */
 
 template<class DeviceType>
-void DihedralCharmmKokkos<DeviceType>::read_restart(FILE *fp)
+void DihedralCharmmKokkos<DeviceType>::read_restart(Store fp)
 {
   DihedralCharmm::read_restart(fp);
 

@@ -156,7 +156,7 @@ void PairLJCutCoulDebye::settings(int narg, char **arg)
    proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairLJCutCoulDebye::write_restart_settings(FILE *fp)
+void PairLJCutCoulDebye::write_restart_settings(Store fp)
 {
   fwrite(&cut_lj_global,sizeof(double),1,fp);
   fwrite(&cut_coul_global,sizeof(double),1,fp);
@@ -169,7 +169,7 @@ void PairLJCutCoulDebye::write_restart_settings(FILE *fp)
    proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairLJCutCoulDebye::read_restart_settings(FILE *fp)
+void PairLJCutCoulDebye::read_restart_settings(Store fp)
 {
   if (comm->me == 0) {
     utils::sfread(FLERR,&cut_lj_global,sizeof(double),1,fp,nullptr,error);

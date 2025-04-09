@@ -1145,7 +1145,7 @@ void FixCMAP::write_data_section(int /*mth*/, FILE *fp,
    pack entire state of Fix into one write
 ------------------------------------------------------------------------- */
 
-void FixCMAP::write_restart(FILE *fp)
+void FixCMAP::write_restart(Store fp)
 {
   if (comm->me == 0) {
     int size = sizeof(bigint);

@@ -37,8 +37,8 @@ class AngleHybrid : public Angle {
   void coeff(int, char **) override;
   void init_style() override;
   double equilibrium_angle(int) override;
-  void write_restart(FILE *) override;
-  void read_restart(FILE *) override;
+  void write_restart(Store) override;
+  void read_restart(Store) override;
   double single(int, int, int, int) override;
   double memory_usage() override;
 

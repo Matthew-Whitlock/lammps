@@ -250,7 +250,7 @@ double PairRHEOSolid::init_one(int i, int j)
    proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairRHEOSolid::write_restart(FILE *fp)
+void PairRHEOSolid::write_restart(Store fp)
 {
   write_restart_settings(fp);
 
@@ -270,7 +270,7 @@ void PairRHEOSolid::write_restart(FILE *fp)
    proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairRHEOSolid::read_restart(FILE *fp)
+void PairRHEOSolid::read_restart(Store fp)
 {
   read_restart_settings(fp);
   allocate();

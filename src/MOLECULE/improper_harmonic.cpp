@@ -243,7 +243,7 @@ void ImproperHarmonic::coeff(int narg, char **arg)
    proc 0 writes out coeffs to restart file
 ------------------------------------------------------------------------- */
 
-void ImproperHarmonic::write_restart(FILE *fp)
+void ImproperHarmonic::write_restart(Store fp)
 {
   fwrite(&k[1], sizeof(double), atom->nimpropertypes, fp);
   fwrite(&chi[1], sizeof(double), atom->nimpropertypes, fp);
@@ -253,7 +253,7 @@ void ImproperHarmonic::write_restart(FILE *fp)
    proc 0 reads coeffs from restart file, bcasts them
 ------------------------------------------------------------------------- */
 
-void ImproperHarmonic::read_restart(FILE *fp)
+void ImproperHarmonic::read_restart(Store fp)
 {
   allocate();
 

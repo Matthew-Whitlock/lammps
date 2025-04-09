@@ -263,7 +263,7 @@ double BondLepton::equilibrium_distance(int i)
    proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void BondLepton::write_restart(FILE *fp)
+void BondLepton::write_restart(Store fp)
 {
   fwrite(&r0[1], sizeof(double), atom->nbondtypes, fp);
   fwrite(&type2expression[1], sizeof(int), atom->nbondtypes, fp);
@@ -288,7 +288,7 @@ void BondLepton::write_restart(FILE *fp)
    proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void BondLepton::read_restart(FILE *fp)
+void BondLepton::read_restart(Store fp)
 {
   allocate();
 

@@ -671,7 +671,7 @@ void PairHybridScaled::coeff(int narg, char **arg)
    proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairHybridScaled::write_restart(FILE *fp)
+void PairHybridScaled::write_restart(Store fp)
 {
   PairHybrid::write_restart(fp);
 
@@ -692,7 +692,7 @@ void PairHybridScaled::write_restart(FILE *fp)
    proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairHybridScaled::read_restart(FILE *fp)
+void PairHybridScaled::read_restart(Store fp)
 {
   PairHybrid::read_restart(fp);
 

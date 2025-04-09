@@ -217,7 +217,7 @@ void PairLeptonCoul::init_style()
    proc 0 writes to restart file
 ------------------------------------------------------------------------- */
 
-void PairLeptonCoul::write_restart_settings(FILE *fp)
+void PairLeptonCoul::write_restart_settings(Store fp)
 {
   fwrite(&cut_global, sizeof(double), 1, fp);
   fwrite(&ewaldflag, sizeof(int), 1, fp);
@@ -231,7 +231,7 @@ void PairLeptonCoul::write_restart_settings(FILE *fp)
    proc 0 reads from restart file, bcasts
 ------------------------------------------------------------------------- */
 
-void PairLeptonCoul::read_restart_settings(FILE *fp)
+void PairLeptonCoul::read_restart_settings(Store fp)
 {
   if (comm->me == 0) {
     utils::sfread(FLERR, &cut_global, sizeof(double), 1, fp, nullptr, error);

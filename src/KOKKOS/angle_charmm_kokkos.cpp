@@ -301,7 +301,7 @@ void AngleCharmmKokkos<DeviceType>::coeff(int narg, char **arg)
 ------------------------------------------------------------------------- */
 
 template<class DeviceType>
-void AngleCharmmKokkos<DeviceType>::read_restart(FILE *fp)
+void AngleCharmmKokkos<DeviceType>::read_restart(Store fp)
 {
   AngleCharmm::read_restart(fp);
 

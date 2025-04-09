@@ -35,7 +35,7 @@ class FixStoreGlobal : public Fix {
   int setmask() override;
   void reset_global(int, int);
 
-  void write_restart(FILE *) override;
+  void write_restart(Store) override;
   void restart(char *) override;
 
   double memory_usage() override;

@@ -30,8 +30,8 @@ class ImproperFourier : public Improper {
   ~ImproperFourier() override;
   void compute(int, int) override;
   void coeff(int, char **) override;
-  void write_restart(FILE *) override;
-  void read_restart(FILE *) override;
+  void write_restart(Store) override;
+  void read_restart(Store) override;
   void write_data(FILE *) override;
 
  protected:

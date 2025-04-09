@@ -54,7 +54,7 @@ void FixEventHyper::store_event_hyper(bigint ntimestep, int delta_clock)
    pack entire state of Fix into one write
 ------------------------------------------------------------------------- */
 
-void FixEventHyper::write_restart(FILE *fp)
+void FixEventHyper::write_restart(Store fp)
 {
   int n = 0;
   double list[6];

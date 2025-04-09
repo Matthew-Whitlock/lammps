@@ -30,8 +30,8 @@ class ImproperSQDistHarm : public Improper {
   ~ImproperSQDistHarm() override;
   void compute(int, int) override;
   void coeff(int, char **) override;
-  void write_restart(FILE *) override;
-  void read_restart(FILE *) override;
+  void write_restart(Store) override;
+  void read_restart(Store) override;
 
  private:
   double *k, *chi;
