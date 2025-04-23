@@ -71,10 +71,6 @@ class LAMMPS {
   char ***packargs;    // arguments for cmdline package commands
   int num_package;     // number of cmdline package commands
 
-  MPI_Comm external_comm;    // MPI comm encompassing external programs
-                             // when multiple programs launched by mpirun
-                             // set by -mpicolor command-line arg
-
   void *mdicomm;    // for use with MDI code coupling library
 
   const char *match_style(const char *style, const char *name);

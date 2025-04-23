@@ -14,7 +14,7 @@
 #include "lammps.h"
 
 #include "exceptions.h"
-#include "input.h"
+#include "universe.h"
 #include "library.h"
 
 #include <cstdlib>
@@ -75,7 +75,7 @@ int main(int argc, char **argv)
 
   try {
     auto lammps = new LAMMPS(argc, argv, lammps_comm);
-    lammps->input->file();
+    lammps->universe->run();
     delete lammps;
   } catch (LAMMPSAbortException &ae) {
     finalize();
@@ -102,6 +102,5 @@ int main(int argc, char **argv)
     exit(1);
   }
   finalize();
-  MPI_Barrier(lammps_comm);
   MPI_Finalize();
 }

@@ -1,0 +1,10 @@
+Example of using Fenix for online process recovery.
+Generates an artificial failure to demonstrate recovery.
+
+Basic               : A simple introduction to the concept. Generates an artificial
+                      failure, which causes a switch over to the restart file that
+                      continues from the checkpoint.
+Run command         : mpirun lmp -spares 1 -in in.basic -restart-file in.basic.restart
+in.basic            : The initial input file
+                      Note: Uncomment the restart command to enable writing checkpoints
+in.basic.restart    : The file to run after a failure
