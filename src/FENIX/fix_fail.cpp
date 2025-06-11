@@ -36,7 +36,28 @@ FixFail::FixFail(LAMMPS* lmp, int narg, char** arg) :
   for(int i = 3; i < narg; i++){
     if(strcmp(arg[i], "rank") == 0){
       if(i+1 >= narg) utils::missing_cmd_args(FLERR, "fix fail rank", error);
-      fail_rank = utils::inumeric(FLERR, arg[++i], false, lmp);
+      std::string csv = arg[++i];
+
+      while(!csv.empty()){
+        size_t comma = csv.rfind(",");
+        if(comma == std::string::npos) comma = -1;
+
+        size_t dash = csv.find("-", comma+1);
+        if(dash == std::string::npos){
+          int rank = utils::inumeric(FLERR, &csv[comma+1], false, lmp);
+          if(rank == comm->me) fail_rank = rank;
+          else if(fail_rank == -1) fail_rank = rank;
+        } else {
+          int end = utils::inumeric(FLERR, &csv[dash+1], false, lmp);
+          csv.erase(dash);
+          int begin = utils::inumeric(FLERR, &csv[comma+1], false, lmp);
+          if(comm->me >= begin && comm->me <= end) fail_rank = comm->me;
+          else if(fail_rank == -1) fail_rank = begin;
+        }
+
+        if(comma == -1) csv.clear();
+        else csv.erase(comma);
+      }
     } else if(strcmp(arg[i], "timestep") == 0){
       if(i+1 >= narg) utils::missing_cmd_args(FLERR, "fix fail iter", error);
       fail_timestep = utils::inumeric(FLERR, arg[++i], false, lmp);

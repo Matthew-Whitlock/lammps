@@ -20,6 +20,8 @@
 
 #include "fenix.hpp"
 
+#include <fmt/ranges.h>
+
 namespace LAMMPS_NS {
 
 /* ---------------------------------------------------------------------- */
@@ -209,6 +211,13 @@ void UniverseFenix::run(){
     try{
       world = res_world;
 
+      if(comm->me == 0){
+        int *faults, n_faults = Fenix_Process_fail_list(&faults);
+        utils::logmesg(lmp, "Fenix recovering from rank failure(s): [{}]\n",
+            fmt::join(faults, faults+n_faults, ", ")
+        );
+      }
+
       if(status != FENIX_SUCCESS){
         error->one(FLERR, "Fenix unable to recover, status: {}", status);
       }
@@ -227,10 +236,6 @@ void UniverseFenix::run(){
 
         lmp->create();
         lmp->post_create();
-      }
-
-      if(comm->me == 0){
-        utils::logmesg(lmp, "Fenix recovered from a fault!\n");
       }
     } catch (const Fenix::CommException& f){
       should_throw = true;
