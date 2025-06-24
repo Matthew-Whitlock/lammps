@@ -36,6 +36,7 @@
 #include "update.h"
 
 #include <cstring>
+#include <cassert>
 
 #include "lmprestart.h"
 
@@ -207,135 +208,64 @@ void WriteRestart::write(const std::string &file)
   if (natoms != atom->natoms && output->thermo->lostflag == Thermo::ERROR)
     error->all(FLERR,"Atom count is inconsistent: {} vs {}, cannot write restart file",
                natoms, atom->natoms);
-
-  // open single restart file or base file for multiproc case
-
-  if (me == 0) {
-    std::string base = file;
-    if (multiproc) base.replace(base.find('%'),1,"base");
-
-    fp = fopen(base.c_str(),"wb");
-    if (fp == nullptr)
-      error->one(FLERR, "Cannot open restart file {}: {}", base, utils::getsyserror());
-  }
-
-  // proc 0 writes magic string, endian flag, numeric version
-
-  if (me == 0) {
-    magic_string();
-    endian();
-    version_numeric();
-  }
-
-  // proc 0 writes header, groups, pertype info, force field info
-
-  if (me == 0) {
-    header();
-    group->write_restart(fp);
-    type_arrays();
-    force_fields();
-  }
-
-  // all procs write fix info
   
-  modify->write_restart(fp);
+  bigint local_atom_size = atom->avec->size_restart();
+  
+  // get checkpoint size in bytes
 
-  // communication buffer for my atom info
-  // max_size = largest buffer needed by any proc
-  // NOTE: are assuming size_restart() returns 32-bit int
-  //   for a huge one-proc problem, nlocal could be 32-bit
-  //   but nlocal * doubles-peratom could overflow
+  bigint base_bytes;
+  fp = Store::Sizer(lmp, base_bytes);
+  base_file(local_atom_size);
+  fp = nullptr;
 
-  int max_size;
-  int send_size = atom->avec->size_restart();
-  MPI_Allreduce(&send_size,&max_size,1,MPI_INT,MPI_MAX,world);
+  bigint atom_bytes;
+  if(!multiproc){
+    bigint magic_bytes;
+    fp = Store::Sizer(lmp, magic_bytes);
+    magic_string();
+    fp = nullptr;
 
-  double *buf;
-  memory->create(buf,max_size,"write_restart:buf");
-  memset(buf,0,max_size*sizeof(double));
-
-  // all procs write file layout info which may include per-proc sizes
-
-  file_layout(send_size);
-
-  // header info is complete
-  // if multiproc output:
-  //   close header file, open multiname file on each writing proc,
-  //   write PROCSPERFILE into new file
-
-  int io_error = 0;
-  if (multiproc) {
-    if (me == 0 && fp) {
-      magic_string();
-      if (ferror(fp)) io_error = 1;
-      fclose(fp);
-      fp = nullptr;
+    MPI_Reduce(&local_atom_size, &atom_bytes, 1, MPI_LMP_BIGINT, MPI_SUM, 0, world);
+    if(me == 0){
+      atom_bytes *= sizeof(double);
+      atom_bytes += sizeof(int)*2*nprocs;
+      atom_bytes += magic_bytes;
     }
-
-    std::string multiname = file;
-    multiname.replace(multiname.find('%'),1,fmt::format("{}",icluster));
-
-    if (filewriter) {
-      fp = fopen(multiname.c_str(),"wb");
-      if (fp == nullptr)
-        error->one(FLERR, "Cannot open restart file {}: {}", multiname, utils::getsyserror());
-      write_int(PROCSPERFILE,nclusterprocs);
+  } else if (filewriter) {
+    fp = Store::Sizer(lmp, atom_bytes);
+    write_int(PROCSPERFILE,nclusterprocs);
+    write_double_vec(PERPROC,local_atom_size,nullptr);
+    for(int i = 1; i < nclusterprocs; i++){
+      int recv_size;
+      MPI_Recv(&recv_size,1,MPI_INT,me+i,0,world,MPI_STATUS_IGNORE);
+      write_double_vec(PERPROC,recv_size,nullptr);
     }
+    magic_string();
+    fp = nullptr;
+  } else {
+    int send_size = local_atom_size;
+    MPI_Send(&send_size,1,MPI_INT,fileproc,0,world);
   }
 
-  // pack my atom data into buf
+  bigint chkpt_bytes = base_bytes+atom_bytes;
 
-  AtomVec *avec = atom->avec;
-  int n = 0;
-  for (int i = 0; i < atom->nlocal; i++) n += avec->pack_restart(i,&buf[n]);
+  // buffer to serialize all checkpoint data
 
-  // if any fix requires it, remap each atom's coords via PBC
-  // is because fix changes atom coords (excepting an integrate fix)
-  // just remap in buffer, not actual atoms
+  char *chkpt = nullptr;
+  if(filewriter){
+    memory->create(chkpt,chkpt_bytes,"write_restart:buf");
+    fp = Store::Buffer(lmp, chkpt, chkpt_bytes);
+  }
 
-  if (modify->restart_pbc_any) {
-    int triclinic = domain->triclinic;
-    double *lo,*hi,*period;
+  // write this run's base file info (version, groups, fixes, etc.)
 
-    if (triclinic == 0) {
-      lo = domain->boxlo;
-      hi = domain->boxhi;
-      period = domain->prd;
-    } else {
-      lo = domain->boxlo_lamda;
-      hi = domain->boxhi_lamda;
-      period = domain->prd_lamda;
-    }
+  base_file(local_atom_size);
+  assert(!filewriter || platform::ftell(fp) == base_bytes);
 
-    int xperiodic = domain->xperiodic;
-    int yperiodic = domain->yperiodic;
-    int zperiodic = domain->zperiodic;
-
-    double *x;
-    int m = 0;
-    for (int i = 0; i < atom->nlocal; i++) {
-      x = &buf[m+1];
-      if (triclinic) domain->x2lamda(x,x);
-
-      if (xperiodic) {
-        if (x[0] < lo[0]) x[0] += period[0];
-        if (x[0] >= hi[0]) x[0] -= period[0];
-        x[0] = MAX(x[0],lo[0]);
-      }
-      if (yperiodic) {
-        if (x[1] < lo[1]) x[1] += period[1];
-        if (x[1] >= hi[1]) x[1] -= period[1];
-        x[1] = MAX(x[1],lo[1]);
-      }
-      if (zperiodic) {
-        if (x[2] < lo[2]) x[2] += period[2];
-        if (x[2] >= hi[2]) x[2] -= period[2];
-        x[2] = MAX(x[2],lo[2]);
-      }
-
-      if (triclinic) domain->lamda2x(x,x);
-      m += static_cast<int> (buf[m]);
-    }
+  // now start writing the atom file
+  
+  if(multiproc && filewriter){
+    write_int(PROCSPERFILE,nclusterprocs);
   }
 
   // output of one or more native files
@@ -343,31 +273,84 @@ void WriteRestart::write(const std::string &file)
   // ping each proc in my cluster, receive its data, write data to file
   // else wait for ping from fileproc, send my data to fileproc
 
-  int tmp,recv_size;
+  int tmp,recv_size = 0;
 
   if (filewriter) {
+    const int tag = PERPROC;
+
     MPI_Status status;
     MPI_Request request;
     for (int iproc = 0; iproc < nclusterprocs; iproc++) {
+      fwrite(&tag, sizeof(int), 1, fp);
+
+      // Leave space to store the size
+      double* atoms = (double*)(chkpt+platform::ftell(fp)+sizeof(int));
+
       if (iproc) {
-        MPI_Irecv(buf,max_size,MPI_DOUBLE,me+iproc,0,world,&request);
+        bigint max_count = (chkpt_bytes - (((char*)atoms)-chkpt))/sizeof(double);
+        int count = max_count > INT_MAX ? INT_MAX : max_count;
+        MPI_Irecv(atoms,count,MPI_DOUBLE,me+iproc,0,world,&request);
         MPI_Send(&tmp,0,MPI_INT,me+iproc,0,world);
         MPI_Wait(&request,&status);
         MPI_Get_count(&status,MPI_DOUBLE,&recv_size);
-      } else recv_size = send_size;
-
-      write_double_vec(PERPROC,recv_size,buf);
+      } else {
+        recv_size = local_atom_size;
+        pack_atoms(atoms);
+      }
+      
+      fwrite(&recv_size, sizeof(int), 1, fp);
+      platform::fseek(fp, platform::ftell(fp)+(recv_size*sizeof(double)));
     }
     magic_string();
+
+    assert(platform::ftell(fp) == chkpt_bytes);
+  } else {
+    double* buf;
+    memory->create(buf,local_atom_size,"write_restart:local_atom_buf");
+    memset(buf,0,local_atom_size*sizeof(double));
+    pack_atoms(buf);
+
+    MPI_Recv(&tmp,0,MPI_INT,fileproc,0,world,MPI_STATUS_IGNORE);
+    MPI_Rsend(buf,local_atom_size,MPI_DOUBLE,fileproc,0,world);
+    memory->destroy(buf);
+  }
+  
+  // write serialized data to file(s)
+  // open base file for multiproc case
+ 
+  int io_error = 0;
+  if (me == 0 && multiproc) {
+    std::string base = file;
+    base.replace(base.find('%'),1,"base");
+
+    fp = fopen(base.c_str(),"wb");
+    if (fp == nullptr)
+      error->one(FLERR, "Cannot open restart file {}: {}", base, utils::getsyserror());
+
+    fwrite(chkpt, 1, chkpt_bytes, fp);
+
     if (ferror(fp)) io_error = 1;
     fclose(fp);
     fp = nullptr;
-
-  } else {
-    MPI_Recv(&tmp,0,MPI_INT,fileproc,0,world,MPI_STATUS_IGNORE);
-    MPI_Rsend(buf,send_size,MPI_DOUBLE,fileproc,0,world);
   }
 
+  if(filewriter){
+    std::string fname = file;
+    if(multiproc) fname.replace(fname.find('%'),1,fmt::format("{}",icluster));
+
+    fp = fopen(fname.c_str(), "wb");
+    if (fp == nullptr)
+      error->one(FLERR, "Cannot open restart file {}: {}", fname, utils::getsyserror());
+
+    char* write = chkpt;
+    if(me == 0 && multiproc) fwrite(chkpt+base_bytes, 1, atom_bytes, fp);
+    else fwrite(chkpt, sizeof(char), chkpt_bytes, fp);
+
+    if (ferror(fp)) io_error = 1;
+    fclose(fp);
+    fp = nullptr;
+  }
+  
   // check for I/O error status
 
   int io_all = 0;
@@ -375,8 +358,10 @@ void WriteRestart::write(const std::string &file)
   if (io_all) error->all(FLERR,"I/O error while writing restart");
 
   // clean up
-
-  memory->destroy(buf);
+  
+  if (filewriter){
+    memory->destroy(chkpt);
+  }
 
   // invoke any fixes that write their own restart file
 
@@ -384,6 +369,34 @@ void WriteRestart::write(const std::string &file)
     if (fix->restart_file)
       fix->write_restart_file(file.c_str());
 }
+
+void WriteRestart::base_file(int send_size){
+  if (me == 0) {
+    // proc 0 writes magic string, endian flag, numeric version
+    magic_string();
+    endian();
+    version_numeric();
+  
+    // proc 0 writes header, groups, pertype info, force field info
+    header();
+    group->write_restart(fp);
+    type_arrays();
+    force_fields();
+  }
+  
+  // all procs write fix info
+  
+  modify->write_restart(fp);
+  
+  // all procs write file layout info which may include per-proc sizes
+
+  file_layout(send_size);
+
+  if(multiproc && me == 0){
+    magic_string();
+  }
+}
+
 
 /* ----------------------------------------------------------------------
    proc 0 writes out problem description
@@ -558,7 +571,7 @@ void WriteRestart::file_layout(int /*send_size*/)
   if (me == 0) {
     int flag = -1;
     fwrite(&flag,sizeof(int),1,fp);
-  }
+}
 }
 
 // ----------------------------------------------------------------------
@@ -654,4 +667,62 @@ void WriteRestart::write_double_vec(int flag, int n, double *vec)
   fwrite(&flag,sizeof(int),1,fp);
   fwrite(&n,sizeof(int),1,fp);
   fwrite(vec,sizeof(double),n,fp);
+}
+
+/* ----------------------------------------------------------------------
+  pack my atom data into buf
+  if any fix requires it, remap each atom's coords via PBC
+  is because fix changes atom coords (excepting an integrate fix)
+  just remap in buffer, not actual atoms
+------------------------------------------------------------------------- */
+
+void WriteRestart::pack_atoms(double* buf){
+  AtomVec *avec = atom->avec;
+  int n = 0;
+  for (int i = 0; i < atom->nlocal; i++) n += avec->pack_restart(i,&buf[n]);
+
+  if (modify->restart_pbc_any) {
+    int triclinic = domain->triclinic;
+    double *lo,*hi,*period;
+
+    if (triclinic == 0) {
+      lo = domain->boxlo;
+      hi = domain->boxhi;
+      period = domain->prd;
+    } else {
+      lo = domain->boxlo_lamda;
+      hi = domain->boxhi_lamda;
+      period = domain->prd_lamda;
+    }
+
+    int xperiodic = domain->xperiodic;
+    int yperiodic = domain->yperiodic;
+    int zperiodic = domain->zperiodic;
+
+    double *x;
+    int m = 0;
+    for (int i = 0; i < atom->nlocal; i++) {
+      x = &buf[m+1];
+      if (triclinic) domain->x2lamda(x,x);
+
+      if (xperiodic) {
+        if (x[0] < lo[0]) x[0] += period[0];
+        if (x[0] >= hi[0]) x[0] -= period[0];
+        x[0] = MAX(x[0],lo[0]);
+      }
+      if (yperiodic) {
+        if (x[1] < lo[1]) x[1] += period[1];
+        if (x[1] >= hi[1]) x[1] -= period[1];
+        x[1] = MAX(x[1],lo[1]);
+      }
+      if (zperiodic) {
+        if (x[2] < lo[2]) x[2] += period[2];
+        if (x[2] >= hi[2]) x[2] -= period[2];
+        x[2] = MAX(x[2],lo[2]);
+      }
+
+      if (triclinic) domain->lamda2x(x,x);
+      m += static_cast<int> (buf[m]);
+    }
+  }
 }

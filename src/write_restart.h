@@ -45,6 +45,7 @@ class WriteRestart : public Command {
   int fileproc;         // ID of proc in my cluster who writes to file
   int icluster;         // which cluster I am in
 
+  void base_file(int);
   void header();
   void type_arrays();
   void force_fields();
@@ -60,6 +61,8 @@ class WriteRestart : public Command {
   void write_string(int, const std::string &);
   void write_int_vec(int, int, int *);
   void write_double_vec(int, int, double *);
+
+  void pack_atoms(double*);
 };
 }    // namespace LAMMPS_NS
 #endif

@@ -13,11 +13,25 @@
 
 #include "store.h"
 #include "store_file.h"
+#include "store_sizer.h"
+#include "store_buffer.h"
 
 namespace LAMMPS_NS {
 
 Store::Store(FILE* file) : impl(std::make_shared<StoreFile>(file)) {};
 Store::Store(const SafeFilePtr& file) : Store(static_cast<FILE*>(file)) {};
+Store::Store(std::shared_ptr<StoreImpl> impl_in) : impl(impl_in) {};
+
+Store Store::Sizer(LAMMPS* lmp, bigint& output){
+  return Store(std::make_shared<StoreSizer>(lmp, output));
+}
+
+Store Store::Buffer(LAMMPS* lmp, std::vector<char>& buf){
+  return Store(std::make_shared<StoreBuffer>(lmp, buf));
+}
+Store Store::Buffer(LAMMPS* lmp, char* buf, bigint buf_len){
+  return Store(std::make_shared<StoreBuffer>(lmp, buf, buf_len));
+}
 
 Store& Store::operator=(FILE* file){
   if(file == nullptr) impl = nullptr;

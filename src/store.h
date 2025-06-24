@@ -16,6 +16,7 @@
 
 #include <memory>
 #include <cstdio>
+#include <vector>
 
 #include "store_impl.h"
 #include "error.h"
@@ -31,6 +32,14 @@ class Store {
   Store() = default;
   Store(FILE*);
   Store(const SafeFilePtr&);
+  Store(std::shared_ptr<StoreImpl> impl);
+
+  static
+  Store Sizer(LAMMPS*, bigint&);
+  static
+  Store Buffer(LAMMPS*, std::vector<char>&);
+  static
+  Store Buffer(LAMMPS*, char*, bigint);
 
   Store& operator=(FILE*);
   bool operator==(FILE* const&);
