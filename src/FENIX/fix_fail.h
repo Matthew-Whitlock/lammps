@@ -21,7 +21,6 @@ FixStyle(fail,FixFail);
 #define LMP_FIX_FAIL_H
 
 #include "fix.h"
-#include "universe_fenix.h"
 
 namespace LAMMPS_NS {
 
@@ -64,9 +63,6 @@ class FixFail : public Fix  {
   void min_pre_force(int) override { check_fail(); }
   void min_pre_reverse(int, int) override { check_fail(); }
   void min_post_force(int) override { check_fail(); }
-
- protected:
-  UniverseFenix* fenix(){ return static_cast<UniverseFenix*>(universe); }
 };
 
 }

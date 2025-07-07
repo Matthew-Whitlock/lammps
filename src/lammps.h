@@ -68,8 +68,15 @@ class LAMMPS {
   const char *non_pair_suffix() const;
   char *exename;    // pointer to argv[0]
 
+  char** in_args;      // arguments passed to constructor
+  int num_in_arg;      // number of arguments passed to constructor
+
   char ***packargs;    // arguments for cmdline package commands
   int num_package;     // number of cmdline package commands
+
+  MPI_Comm external_comm;    // MPI comm encompassing external programs
+                             // when multiple programs launched by mpirun
+                             // set by -mpicolor command-line arg
 
   void *mdicomm;    // for use with MDI code coupling library
 

@@ -59,7 +59,7 @@ FixFail::FixFail(LAMMPS* lmp, int narg, char** arg) :
         else csv.erase(comma);
       }
     } else if(strcmp(arg[i], "timestep") == 0){
-      if(i+1 >= narg) utils::missing_cmd_args(FLERR, "fix fail iter", error);
+      if(i+1 >= narg) utils::missing_cmd_args(FLERR, "fix fail timestep", error);
       fail_timestep = utils::inumeric(FLERR, arg[++i], false, lmp);
     } else if(strcmp(arg[i], "step") == 0){
       if(i+1 >= narg) utils::missing_cmd_args(FLERR, "fix fail timestep", error);
@@ -83,7 +83,7 @@ FixFail::FixFail(LAMMPS* lmp, int narg, char** arg) :
 ------------------------------------------------------------------------- */
 
 void FixFail::check_fail(){
-  if(skip_double_failure && fenix()->role == FENIX_ROLE_RECOVERED_RANK) return;
+  if(skip_double_failure && Fenix::role() == FENIX_ROLE_RECOVERED_RANK) return;
   if(fail_rank != -1 && comm->me != fail_rank) return;
   if(fail_timestep != -1 && update->ntimestep != fail_timestep) return;
   if(!fail_var.empty()){

@@ -13,7 +13,6 @@
 ------------------------------------------------------------------------- */
 
 #include "universe.h"
-#include "input.h"
 
 #include "error.h"
 #include "memory.h"
@@ -31,8 +30,6 @@ static constexpr int MAXLINE = 256;
 Universe::Universe(LAMMPS *lmp, MPI_Comm communicator) : Pointers(lmp)
 {
   uworld = uorig = communicator;
-  external_comm = MPI_COMM_NULL;
-
   MPI_Comm_rank(uworld,&me);
   MPI_Comm_size(uworld,&nprocs);
 
@@ -46,126 +43,16 @@ Universe::Universe(LAMMPS *lmp, MPI_Comm communicator) : Pointers(lmp)
 
   memory->create(uni2orig,nprocs,"universe:uni2orig");
   for (int i = 0; i < nprocs; i++) uni2orig[i] = i;
-
-  screenarg = logarg = partscreenarg = partlogarg = nullptr;
 }
 
 /* ---------------------------------------------------------------------- */
 
 Universe::~Universe()
 {
-  if (screen && screen != stdout) {
-    fclose(screen);
-    screen = nullptr;
-  }
-  if (logfile) {
-    fclose(logfile);
-    logfile = nullptr;
-  }
-  if (nworlds > 1 && ulogfile){
-    fclose(ulogfile);
-    ulogfile = nullptr;
-  }
-  if (world != uworld) MPI_Comm_free(&world);
   if (uworld != uorig) MPI_Comm_free(&uworld);
-  if (external_comm != MPI_COMM_NULL) MPI_Comm_free(&uorig);
   memory->destroy(procs_per_world);
   memory->destroy(root_proc);
   memory->destroy(uni2orig);
-}
-
-/* ----------------------------------------------------------------------
-   Parse argument and its parameters if a valid universe arg, and increment
-   start value based on number of parsed strings from arg.
-   Returns true if this argument is handled by universe
-------------------------------------------------------------------------- */
-
-bool Universe::parse_arg(int* start, int narg, char** arg){
-  int& iarg = *start;
-
-  if (strcmp(arg[iarg],"-mpicolor") == 0 ||
-      strcmp(arg[iarg],"-m") == 0) {
-    if (iarg+2 > narg)
-      error->universe_all(FLERR,"Invalid command-line argument");
-    if (iarg != 1) error->universe_all(FLERR,"Invalid command-line argument");
-    int color = std::stoi(arg[iarg+1]);
-    this->multiapp_split(color);
-
-    iarg += 2;
-
-  } else if (strcmp(arg[iarg],"-partition") == 0 ||
-             strcmp(arg[iarg],"-p") == 0) {
-    if (iarg+2 > narg)
-      error->universe_all(FLERR,"Invalid command-line argument");
-    iarg++;
-    while (iarg < narg && arg[iarg][0] != '-') {
-      this->add_world(arg[iarg]);
-      iarg++;
-    }
-
-  } else if (strcmp(arg[iarg],"-reorder") == 0 ||
-             strcmp(arg[iarg],"-ro") == 0) {
-    if (iarg+3 > narg)
-      error->universe_all(FLERR,"Invalid command-line argument");
-    if (nworlds>0)
-      error->universe_all(FLERR,"Cannot use -reorder after -partition");
-    this->reorder(arg[iarg+1],arg[iarg+2]);
-    iarg += 3;
-
-  } else if (strcmp(arg[iarg],"-screen") == 0 ||
-             strcmp(arg[iarg],"-sc") == 0) {
-    if (iarg+2 > narg)
-      error->universe_all(FLERR,"Invalid command-line argument");
-    screenarg = arg[iarg + 1];
-    iarg += 2;
-
-  } else if (strcmp(arg[iarg],"-log") == 0 ||
-             strcmp(arg[iarg],"-l") == 0) {
-    if (iarg+2 > narg)
-      error->universe_all(FLERR,"Invalid command-line argument");
-    logarg = arg[iarg + 1];
-    iarg += 2;
-
-  } else if (strcmp(arg[iarg],"-plog") == 0 ||
-             strcmp(arg[iarg],"-pl") == 0) {
-    if (iarg+2 > narg)
-     error->universe_all(FLERR,"Invalid command-line argument");
-    partlogarg = arg[iarg + 1];
-    iarg += 2;
-
-  } else if (strcmp(arg[iarg],"-pscreen") == 0 ||
-             strcmp(arg[iarg],"-ps") == 0) {
-    if (iarg+2 > narg)
-     error->universe_all(FLERR,"Invalid command-line argument");
-    partscreenarg = arg[iarg + 1];
-    iarg += 2;
-
-  } else {
-    return false;
-  }
-
-  return true;
-}
-
-/* ----------------------------------------------------------------------
-  Run if multiple apps were launched with one mpirun command.
-    If so, the passed communicator (e.g. MPI_COMM_WORLD) is bigger than LAMMPS
-    universe should be, so shrink it based on passed color.
-  syntax: -mpicolor color
-    color = integer for this app, different than any other app(s)
-    Must be the first argument passed
-  do the following:
-    perform an MPI_Comm_split() to create a new LAMMPS-only subcomm
-    NOTE: this assumes other app(s) make same call, else will hang!
-    store comm that all apps belong to in external_comm
-------------------------------------------------------------------------- */
-void Universe::multiapp_split(int color)
-{
-  external_comm = uorig;
-  MPI_Comm_split(external_comm,color,me,&uorig);
-  uworld = uorig;
-  MPI_Comm_rank(uworld, &me);
-  MPI_Comm_size(uworld, &me);
 }
 
 /* ----------------------------------------------------------------------
@@ -267,7 +154,7 @@ void Universe::reorder(char *style, char *arg)
    str = P -> add 1 world with P procs
 ------------------------------------------------------------------------- */
 
-void Universe::add_world(const char *str)
+void Universe::add_world(char *str)
 {
   int n,nper;
 
@@ -275,9 +162,6 @@ void Universe::add_world(const char *str)
   nper = 0;
 
   if (str != nullptr) {
-    // flag that this universe is partitioned (ie 'exists')
-
-    existflag = 1;
 
     // check for valid partition argument
 
@@ -335,102 +219,4 @@ int Universe::consistent()
   for (int i = 0; i < nworlds; i++) n += procs_per_world[i];
   if (n == nprocs) return 1;
   else return 0;
-}
-
-/* ---------------------------------------------------------------------- */
-
-void Universe::create(int helpflag)
-{
-  // if no partition command-line switch, universe is one world with all procs
-
-  if(nworlds == 0) this->add_world(nullptr);
-
-  // sum of procs in all worlds must equal total # of procs
-
-  if(!this->consistent())
-    error->universe_all(FLERR,"Processor partitions do not match number of allocated processors");
-
-  // if no partition command-line switch, cannot use -pscreen option
-
-  if(nworlds == 1 && partscreenarg)
-    error->universe_all(FLERR,"Can only use -pscreen with multiple partitions");
-
-  // if no partition command-line switch, cannot use -plog option
-
-  if(nworlds == 1 && partlogarg)
-    error->universe_all(FLERR,"Can only use -plog with multiple partitions");
-
-  // create communicator(s) for lammps->world
-
-  this->create_worlds();
-
-  // set universe-level screen and logfile
-
-  uscreen = screenarg ? nullptr : stdout;
-  if (me == 0 && screenarg && strcmp(screenarg,"none") != 0) {
-    uscreen = fopen(screenarg,"w");
-    if (uscreen == nullptr)
-      error->universe_one(FLERR,fmt::format("Cannot open universe screen file {}: {}",
-                                            screenarg,utils::getsyserror()));
-  }
-
-  ulogfile = nullptr;
-  const char* logname = logarg == nullptr ? "log.lammps" : logarg;
-  if (me == 0 && strcmp(logname,"none") != 0) {
-    ulogfile = fopen(logname, "w");
-    bool skip_check = logarg == nullptr && helpflag;
-    if(!skip_check && ulogfile == nullptr)
-      error->universe_one(FLERR,fmt::format("Cannot open universe log file {}: {}",
-                                            logname,utils::getsyserror()));
-  }
-
-  // set world-level screen and logfile
-
-  int world_rank;
-  MPI_Comm_rank(world, &world_rank);
-
-  if (nworlds == 1) {
-    //Simply inherit from universe
-    screen = uscreen;
-    logfile = ulogfile;
-  } else {
-    screen = logfile = infile = nullptr;
-
-    const char* screen_prefix = partscreenarg ? partscreenarg : screenarg;
-    if(!screen_prefix) screen_prefix = "screen";
-    if(world_rank == 0 && strcmp(screen_prefix, "none") != 0) {
-      std::string str = fmt::format("{}.{}", screen_prefix, iworld);
-      screen = fopen(str.c_str(), "w");
-      if (screen == nullptr)
-        error->one(FLERR,"Cannot open screen file {}: {}",str,utils::getsyserror());
-    }
-
-    const char* log_prefix = partlogarg ? partlogarg : logname;
-    if(world_rank == 0 && strcmp(log_prefix, "none") != 0) {
-      std::string str = fmt::format("{}.{}", log_prefix, iworld);
-      logfile = fopen(str.c_str(), "w");
-      if (logfile == nullptr)
-        error->one(FLERR,"Cannot open logfile {}: {}", str, utils::getsyserror());
-    }
-  }
-}
-
-/* ----------------------------------------------------------------------
-   Construct individual worlds if multiple partitions requested
-------------------------------------------------------------------------- */
-
-void Universe::create_worlds(){
-  if(nworlds == 1){
-    world = uworld;
-  } else {
-    MPI_Comm_split(uworld, iworld, me, &world);
-  }
-}
-
-/* ----------------------------------------------------------------------
-   Run the input file across the universe.
-------------------------------------------------------------------------- */
-
-void Universe::run(){
-  input->file();
 }

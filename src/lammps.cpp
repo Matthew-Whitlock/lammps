@@ -59,10 +59,6 @@
 #include "plugin.h"
 #endif
 
-#if defined(LAMMPS_FENIX)
-#include "universe_fenix.h"
-#endif
-
 #include <cctype>
 #include <cmath>
 #include <cstring>
@@ -139,14 +135,12 @@ LAMMPS::LAMMPS(int narg, char **arg, MPI_Comm communicator) :
   modify(nullptr), group(nullptr), output(nullptr), timer(nullptr), kokkos(nullptr),
   atomKK(nullptr), memoryKK(nullptr), python(nullptr), citeme(nullptr)
 {
+  in_args = arg;
+  num_in_arg = narg;
+
   memory = new Memory(this);
   error = new Error(this);
-  universe =
-#ifdef LAMMPS_FENIX
-    new UniverseFenix(this, communicator);
-#else
-    new Universe(this, communicator);
-#endif
+  universe = new Universe(this,communicator);
 
   version = (const char *) LAMMPS_VERSION;
   num_ver = utils::date2num(version);
@@ -158,6 +152,7 @@ LAMMPS::LAMMPS(int narg, char **arg, MPI_Comm communicator) :
   if (has_git_info() && ((update_string == " - Development") || (update_string == " - Maintenance")))
     update_string += fmt::format(" - {}", git_descriptor());
 
+  external_comm = MPI_COMM_NULL;
   mdicomm = nullptr;
 
   skiprunflag = 0;
@@ -181,9 +176,40 @@ LAMMPS::LAMMPS(int narg, char **arg, MPI_Comm communicator) :
   }
 #endif
 
+  // check if -mpicolor is first arg
+  // if so, then 2 or more apps were launched with one mpirun command
+  //   this means passed communicator (e.g. MPI_COMM_WORLD) is bigger than LAMMPS
+  //   universe communicator needs to shrink to be just LAMMPS
+  // syntax: -mpicolor color
+  //   color = integer for this app, different than any other app(s)
+  // do the following:
+  //   perform an MPI_Comm_split() to create a new LAMMPS-only subcomm
+  //   NOTE: this assumes other app(s) make same call, else will hang!
+  //   re-create universe with subcomm
+  //   store comm that all apps belong to in external_comm
+
+  int iarg = 1;
+  if (narg-iarg >= 2 && (strcmp(arg[iarg],"-mpicolor") == 0 ||
+                         strcmp(arg[iarg],"-m") == 0)) {
+    int me,nprocs;
+    MPI_Comm_rank(communicator,&me);
+    MPI_Comm_size(communicator,&nprocs);
+    int color = std::stoi(arg[iarg+1]);
+    MPI_Comm subcomm;
+    MPI_Comm_split(communicator,color,me,&subcomm);
+    external_comm = communicator;
+    communicator = subcomm;
+    delete universe;
+    universe = new Universe(this,communicator);
+  }
+
   // parse input switches
 
   int inflag = 0;
+  int screenflag = 0;
+  int logflag = 0;
+  int partscreenflag = 0;
+  int partlogflag = 0;
   int kokkosflag = 0;
   int restart2data = 0;
   int restart2dump = 0;
@@ -211,7 +237,7 @@ LAMMPS::LAMMPS(int narg, char **arg, MPI_Comm communicator) :
   int *pfirst = nullptr;
   int *plast = nullptr;
 
-  int iarg = 1;
+  iarg = 1;
   while (iarg < narg) {
 
     if (strcmp(arg[iarg],"-cite") == 0 ||
@@ -280,6 +306,13 @@ LAMMPS::LAMMPS(int narg, char **arg, MPI_Comm communicator) :
       while (iarg < narg && arg[iarg][0] != '-') iarg++;
       kklast = iarg;
 
+    } else if (strcmp(arg[iarg],"-log") == 0 ||
+               strcmp(arg[iarg],"-l") == 0) {
+      if (iarg+2 > narg)
+        error->universe_all(FLERR,"Invalid command-line argument");
+      logflag = iarg + 1;
+      iarg += 2;
+
     } else if (strcmp(arg[iarg],"-mpicolor") == 0 ||
                strcmp(arg[iarg],"-m") == 0) {
       if (iarg+2 > narg)
@@ -314,6 +347,39 @@ LAMMPS::LAMMPS(int narg, char **arg, MPI_Comm communicator) :
       }
       plast[npack++] = iarg;
 
+    } else if (strcmp(arg[iarg],"-partition") == 0 ||
+        strcmp(arg[iarg],"-p") == 0) {
+      universe->existflag = 1;
+      if (iarg+2 > narg)
+        error->universe_all(FLERR,"Invalid command-line argument");
+      iarg++;
+      while (iarg < narg && arg[iarg][0] != '-') {
+        universe->add_world(arg[iarg]);
+        iarg++;
+      }
+
+    } else if (strcmp(arg[iarg],"-plog") == 0 ||
+               strcmp(arg[iarg],"-pl") == 0) {
+      if (iarg+2 > narg)
+       error->universe_all(FLERR,"Invalid command-line argument");
+      partlogflag = iarg + 1;
+      iarg += 2;
+
+    } else if (strcmp(arg[iarg],"-pscreen") == 0 ||
+               strcmp(arg[iarg],"-ps") == 0) {
+      if (iarg+2 > narg)
+       error->universe_all(FLERR,"Invalid command-line argument");
+      partscreenflag = iarg + 1;
+      iarg += 2;
+
+    } else if (strcmp(arg[iarg],"-reorder") == 0 ||
+               strcmp(arg[iarg],"-ro") == 0) {
+      if (iarg+3 > narg)
+        error->universe_all(FLERR,"Invalid command-line argument");
+      if (universe->existflag)
+        error->universe_all(FLERR,"Cannot use -reorder after -partition");
+      universe->reorder(arg[iarg+1],arg[iarg+2]);
+      iarg += 3;
 
     } else if (strcmp(arg[iarg],"-restart2data") == 0 ||
                strcmp(arg[iarg],"-r2data") == 0) {
@@ -380,6 +446,13 @@ LAMMPS::LAMMPS(int narg, char **arg, MPI_Comm communicator) :
       while (iarg < narg && arg[iarg][0] != '-') iarg++;
       wlast = iarg;
 
+    } else if (strcmp(arg[iarg],"-screen") == 0 ||
+               strcmp(arg[iarg],"-sc") == 0) {
+      if (iarg+2 > narg)
+        error->universe_all(FLERR,"Invalid command-line argument");
+      screenflag = iarg + 1;
+      iarg += 2;
+
     } else if (strcmp(arg[iarg],"-skiprun") == 0 ||
                strcmp(arg[iarg],"-sr") == 0) {
       skiprunflag = 1;
@@ -412,60 +485,188 @@ LAMMPS::LAMMPS(int narg, char **arg, MPI_Comm communicator) :
       iarg += 3;
       while (iarg < narg && arg[iarg][0] != '-') iarg++;
 
-    } else if (universe->parse_arg(&iarg, narg, arg)) {
-      //Universe handles argument
-
     } else {
       error->universe_all(FLERR, fmt::format("Invalid command-line argument: {}", arg[iarg]) );
     }
   }
 
-  // universe creates this rank's world, screen, and logfile.
+  // if no partition command-line switch, universe is one world with all procs
 
-  universe->create(helpflag);
+  if (universe->existflag == 0) universe->add_world(nullptr);
 
-  // set infile and open input script if from file
+  // sum of procs in all worlds must equal total # of procs
 
-  if(inflag == 0 && universe->nworlds > 1)
+  if (!universe->consistent())
+    error->universe_all(FLERR,"Processor partitions do not match number of allocated processors");
+
+  // universe cannot use stdin for input file
+
+  if (universe->existflag && inflag == 0)
     error->universe_all(FLERR,"Must use -in switch with multiple partitions");
 
-  int me;
-  MPI_Comm_rank(world, &me);
-  if (me == 0) {
-    if (inflag > 0 && strcmp(arg[inflag], "none") != 0) {
-      infile = fopen(arg[inflag], "r");
-      if (infile == nullptr)
-        error->one(FLERR,"Cannot open input script {}: {}", arg[inflag], utils::getsyserror());
-    } else {
-      infile = stdin;
+  // if no partition command-line switch, cannot use -pscreen option
+
+  if (universe->existflag == 0 && partscreenflag)
+    error->universe_all(FLERR,"Can only use -pscreen with multiple partitions");
+
+  // if no partition command-line switch, cannot use -plog option
+
+  if (universe->existflag == 0 && partlogflag)
+    error->universe_all(FLERR,"Can only use -plog with multiple partitions");
+
+  // set universe screen and logfile
+
+  if (universe->me == 0) {
+    if (screenflag == 0)
+      universe->uscreen = stdout;
+    else if (strcmp(arg[screenflag],"none") == 0)
+      universe->uscreen = nullptr;
+    else {
+      universe->uscreen = fopen(arg[screenflag],"w");
+      if (universe->uscreen == nullptr)
+        error->universe_one(FLERR,fmt::format("Cannot open universe screen file {}: {}",
+                                              arg[screenflag],utils::getsyserror()));
+    }
+    if (logflag == 0) {
+      if (helpflag == 0) {
+        universe->ulogfile = fopen("log.lammps","w");
+        if (universe->ulogfile == nullptr)
+          error->universe_warn(FLERR,"Cannot open log.lammps for writing: "
+                               + utils::getsyserror());
+      }
+    } else if (strcmp(arg[logflag],"none") == 0)
+      universe->ulogfile = nullptr;
+    else {
+      universe->ulogfile = fopen(arg[logflag],"w");
+      if (universe->ulogfile == nullptr)
+        error->universe_one(FLERR,fmt::format("Cannot open universe log file {}: {}",
+                                              arg[logflag],utils::getsyserror()));
     }
   }
 
-  // make all screen and logfile output unbuffered for debugging crashes
-
-  if (nonbufflag) {
-    if (universe->uscreen) setbuf(universe->uscreen, nullptr);
-    if (universe->ulogfile) setbuf(universe->ulogfile, nullptr);
-    if (screen) setbuf(screen, nullptr);
-    if (logfile) setbuf(logfile, nullptr);
+  if (universe->me > 0) {
+    if (screenflag == 0) universe->uscreen = stdout;
+    else universe->uscreen = nullptr;
+    universe->ulogfile = nullptr;
   }
 
-  // screen and logfile messages for universe and world
+  // make universe and single world the same, since no partition switch
+  // world inherits settings from universe
+  // set world screen, logfile, communicator, infile
+  // open input script if from file
 
-  if ((universe->me == 0) && (universe->nworlds > 1) && (!helpflag)) {
-    constexpr char fmt[] = "LAMMPS ({}{})\nRunning on {} partitions of processors\n";
-    if (universe->uscreen)
-      utils::print(universe->uscreen, fmt, version, update_string, universe->nworlds);
+  if (universe->existflag == 0) {
+    screen = universe->uscreen;
+    logfile = universe->ulogfile;
+    world = universe->uworld;
 
-    if (universe->ulogfile)
-      utils::print(universe->ulogfile, fmt, version, update_string, universe->nworlds);
+    if (universe->me == 0) {
+      if (inflag <= 0) infile = stdin;
+      else if (strcmp(arg[inflag], "none") == 0) infile = stdin;
+      else infile = fopen(arg[inflag],"r");
+      if (infile == nullptr)
+        error->all(FLERR,"Cannot open input script {}: {}", arg[inflag], utils::getsyserror());
+      if (!helpflag)
+        utils::logmesg(this,"LAMMPS ({}{})\n", version, update_string);
+
+      utils::flush_buffers(this);
+    }
+
+  // universe is one or more worlds, as setup by partition switch
+  // split universe communicator into separate world communicators
+  // set world screen, logfile, communicator, infile
+  // open input script
+
+  } else {
+    int me;
+    MPI_Comm_split(universe->uworld,universe->iworld,0,&world);
+    MPI_Comm_rank(world,&me);
+
+    screen = logfile = infile = nullptr;
+    if (me == 0) {
+      std::string str;
+      if (partscreenflag == 0) {
+        if (screenflag == 0) {
+          str = fmt::format("screen.{}",universe->iworld);
+          screen = fopen(str.c_str(),"w");
+          if (screen == nullptr)
+            error->one(FLERR,"Cannot open screen file {}: {}",str,utils::getsyserror());
+        } else if (strcmp(arg[screenflag],"none") == 0) {
+          screen = nullptr;
+        } else {
+          str = fmt::format("{}.{}",arg[screenflag],universe->iworld);
+          screen = fopen(str.c_str(),"w");
+          if (screen == nullptr)
+            error->one(FLERR,"Cannot open screen file {}: {}",arg[screenflag],utils::getsyserror());
+        }
+      } else if (strcmp(arg[partscreenflag],"none") == 0) {
+        screen = nullptr;
+      } else {
+        str = fmt::format("{}.{}",arg[partscreenflag],universe->iworld);
+        screen = fopen(str.c_str(),"w");
+        if (screen == nullptr)
+          error->one(FLERR,"Cannot open screen file {}: {}",str,utils::getsyserror());
+      }
+
+      if (partlogflag == 0) {
+        if (logflag == 0) {
+          str = fmt::format("log.lammps.{}",universe->iworld);
+          logfile = fopen(str.c_str(),"w");
+          if (logfile == nullptr)
+            error->one(FLERR,"Cannot open logfile {}: {}",str, utils::getsyserror());
+        } else if (strcmp(arg[logflag],"none") == 0) {
+          logfile = nullptr;
+        } else {
+          str = fmt::format("{}.{}",arg[logflag],universe->iworld);
+          logfile = fopen(str.c_str(),"w");
+          if (logfile == nullptr)
+            error->one(FLERR,"Cannot open logfile {}: {}",str, utils::getsyserror());
+        }
+      } else if (strcmp(arg[partlogflag],"none") == 0) {
+        logfile = nullptr;
+      } else {
+        str = fmt::format("{}.{}",arg[partlogflag],universe->iworld);
+        logfile = fopen(str.c_str(),"w");
+        if (logfile == nullptr)
+          error->one(FLERR,"Cannot open logfile {}: {}",str, utils::getsyserror());
+      }
+
+      if (strcmp(arg[inflag], "none") != 0) {
+        infile = fopen(arg[inflag],"r");
+        if (infile == nullptr)
+          error->one(FLERR,"Cannot open input script {}: {}",arg[inflag], utils::getsyserror());
+      }
+    }
+
+    // make all screen and logfile output unbuffered for debugging crashes
+
+    if (nonbufflag) {
+      if (universe->uscreen) setbuf(universe->uscreen, nullptr);
+      if (universe->ulogfile) setbuf(universe->ulogfile, nullptr);
+      if (screen) setbuf(screen, nullptr);
+      if (logfile) setbuf(logfile, nullptr);
+    }
+
+    // screen and logfile messages for universe and world
+    std::string update_string = UPDATE_STRING;
+    if (has_git_info() && ((update_string == " - Development")
+                           || (update_string == " - Maintenance")))
+      update_string += fmt::format(" - {}", git_descriptor());
+
+    if ((universe->me == 0) && (!helpflag)) {
+
+      constexpr char fmt[] = "LAMMPS ({}{})\nRunning on {} partitions of processors\n";
+      if (universe->uscreen)
+        utils::print(universe->uscreen, fmt, version, update_string, universe->nworlds);
+
+      if (universe->ulogfile)
+        utils::print(universe->ulogfile, fmt, version, update_string, universe->nworlds);
+    }
+
+    if ((me == 0) && (!helpflag))
+      utils::logmesg(this,"LAMMPS ({}{})\nProcessor partition = {}\n", version,
+                     update_string, universe->iworld);
   }
-  if ((me == 0) && (!helpflag)){
-    std::string part_str = universe->nworlds == 1 ? "" :
-      fmt::format("\nProcessor partition = {}", universe->iworld);
-    utils::logmesg(this,"LAMMPS ({}{}){}\n", version, update_string, part_str);
-  }
-  utils::flush_buffers(this);
 
   // check consistency of datatype settings in lmptype.h
 
@@ -598,12 +799,35 @@ LAMMPS::~LAMMPS() noexcept(false)
     utils::logmesg(this, "Total wall time: {}:{:02d}:{:02d}\n", hours, minutes, seconds);
   }
 
+  if (universe->nworlds == 1) {
+    if (screen && screen != stdout) fclose(screen);
+    if (logfile) fclose(logfile);
+    logfile = nullptr;
+    if (screen != stdout) screen = nullptr;
+  } else {
+    if (screen && screen != stdout) fclose(screen);
+    if (logfile) fclose(logfile);
+    if (universe->ulogfile) fclose(universe->ulogfile);
+    logfile = nullptr;
+    if (screen != stdout) screen = nullptr;
+  }
+
   if (infile && infile != stdin) fclose(infile);
+
+  if (world != universe->uworld) MPI_Comm_free(&world);
 
   delete python;
   delete kokkos;
   delete[] suffix;
   delete[] suffix2;
+
+  // free the MPI comm created by -mpicolor cmdline arg processed in constructor
+  // it was passed to universe as if original universe world
+  // may have been split later by partitions, universe will free the splits
+  // free a copy of uorig here, so check in universe destructor will still work
+
+  MPI_Comm copy = universe->uorig;
+  if (external_comm != MPI_COMM_NULL) MPI_Comm_free(&copy);
 
   delete input;
   delete universe;

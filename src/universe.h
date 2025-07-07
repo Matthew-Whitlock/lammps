@@ -32,34 +32,15 @@ class Universe : protected Pointers {
   int *procs_per_world;    // # of procs in each world
   int *root_proc;          // root proc in each world
 
-  MPI_Comm uorig;    // unordered communicator passed to LAMMPS instance
+  MPI_Comm uorig;    // original communicator passed to LAMMPS instance
   int *uni2orig;     // proc I in universe uworld is
                      // proc uni2orig[I] in original communicator
 
-  MPI_Comm external_comm;    // Original communicator passed to lammps,
-                             //  if lammps was launched alongside multiple
-                             //  MPI apps. Else MPI_COMM_NULL.
-
-  char* screenarg;       // arguments for various configuration flags
-  char* logarg;          //  or nullptr if not specified.
-  char* partscreenarg;
-  char* partlogarg;
-
   Universe(class LAMMPS *, MPI_Comm);
   ~Universe() override;
-
   void reorder(char *, char *);
-
-  virtual void add_world(const char *);
-  virtual int consistent();
-
-  virtual bool parse_arg(int*, int, char**);   // handle one argument and its parameters
-  virtual void create(int);                    // create universe and world communicators, screens, and logs
-  virtual void run();                          // run all input
-
- protected:
-  virtual void multiapp_split(int);            // split off just LAMMPS' portion of uorig if -mpicolor passed
-  virtual void create_worlds();                // create world communicator(s) from universe
+  void add_world(char *);
+  int consistent();
 };
 
 }    // namespace LAMMPS_NS

@@ -23,6 +23,8 @@ class Region;
 
 class Group : protected Pointers {
  public:
+  static constexpr int MAX_GROUP = 32;
+
   int ngroup;          // # of defined groups
   char **names;        // name of each group
   int *bitmask;        // one-bit mask for each group
@@ -40,6 +42,7 @@ class Group : protected Pointers {
   int get_bitmask_by_id(const std::string &, int, const std::string &, const std::string &);
   void write_restart(FILE *);
   void read_restart(FILE *);
+  int read_restart(int, char*);
 
   bigint count_all();             // count atoms in group all
   bigint count(int);              // count atoms in group
