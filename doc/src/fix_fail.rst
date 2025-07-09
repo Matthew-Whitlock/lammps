@@ -48,9 +48,16 @@ every step of the solver or the name of a function to use for checking for failu
 ampersand (pre_force&post_neighbor).
 
 
+Restrictions
+""""""""""""
+
+This fix is part of the FENIX package. It is only enabled if LAMMPS was built
+with that package. See the :doc:`Build package <Build_package>` page for more
+info.
+
 Related commands
 """"""""""""""""
-:doc:`kill rank <rank>`
+:doc:`kill` :doc:`fenix`
 
 Default
 """""""
