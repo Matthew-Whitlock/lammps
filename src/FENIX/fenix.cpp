@@ -27,9 +27,6 @@ int MPI_Finalize() {
   return MPI_SUCCESS;
 }
 
-// disambiguate the Fenix object from the Fenix namespace
-namespace fenix = ::Fenix;
-
 namespace LAMMPS_NS {
 
 Fenix* Fenix::active_controller = nullptr;
@@ -65,11 +62,10 @@ void Fenix::command(int narg, char** arg) {
 
   MPI_Comm full_world = world;
 
-  fenix::Args::FenixInitArgs fenix_args;
+  fenix::args::FenixInitArgs fenix_args;
   fenix_args.in_comm = full_world;
   fenix_args.out_comm = &resilient_world;
   fenix_args.spares = spare_ranks;
-  fenix_args.callback_exception_mode = fenix::SQUASH;
 
   // Only non-spare ranks leave init
   fenix::init(fenix_args);
