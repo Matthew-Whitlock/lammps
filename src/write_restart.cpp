@@ -189,6 +189,73 @@ void WriteRestart::multiproc_options(int multiproc_caller, int narg, char **arg)
 
 void WriteRestart::write(const std::string &file)
 {
+  // open single restart file or base file for multiproc case
+
+  if (me == 0) {
+    std::string base = file;
+    if (multiproc) base.replace(base.find('%'),1,"base");
+
+    fp = fopen(base.c_str(),"wb");
+    if (fp == nullptr)
+      error->one(FLERR, "Cannot open restart file {}: {}", base, utils::getsyserror());
+  }
+
+  // Proc 0 writes the base file details, all procs contribute
+  base_file();
+
+  // if multiproc output:
+  //   close header file, open multiname file on each writing proc,
+  //   write PROCSPERFILE into new file
+
+  int io_error = 0;
+  if (multiproc) {
+    if (me == 0 && fp) {
+      if (ferror(fp)) io_error = 1;
+      fp = nullptr;             // implicitly closes file
+    }
+
+    std::string multiname = file;
+    multiname.replace(multiname.find('%'),1,fmt::format("{}",icluster));
+
+    if (filewriter) {
+      fp = fopen(multiname.c_str(),"wb");
+      if (fp == nullptr)
+        error->one(FLERR, "Cannot open restart file {}: {}", multiname, utils::getsyserror());
+    }
+  }
+
+  // check for I/O error status
+
+  int io_all = 0;
+  MPI_Allreduce(&io_error,&io_all,1,MPI_INT,MPI_MAX,world);
+  if (io_all) error->all(FLERR,"I/O error while writing restart");
+
+  // All procs contribute to writing per-atom data
+  peratom_file();
+
+  // check again for I/O error status
+  if (filewriter) {
+    if (ferror(fp)) io_error = 1;
+    fp = nullptr;               // implicitly closes file
+  }
+
+  io_all = 0;
+  MPI_Allreduce(&io_error,&io_all,1,MPI_INT,MPI_MAX,world);
+  if (io_all) error->all(FLERR,"I/O error while writing restart");
+
+
+  // invoke any fixes that write their own restart file
+
+  for (const auto &fix : modify->get_fix_list())
+    if (fix->restart_file)
+      fix->write_restart_file(file.c_str());
+}
+
+/* ----------------------------------------------------------------------
+   All procs contribute to proc 0 writing base file
+------------------------------------------------------------------------- */
+
+void WriteRestart::base_file() {
   // special case where reneighboring is not done in integrator
   //   on timestep restart file is written (due to build_once being set)
   // if box is changing, must be reset, else restart file will have
@@ -206,17 +273,6 @@ void WriteRestart::write(const std::string &file)
   if (natoms != atom->natoms && output->thermo->lostflag == Thermo::ERROR)
     error->all(FLERR,"Atom count is inconsistent: {} vs {}, cannot write restart file",
                natoms, atom->natoms);
-
-  // open single restart file or base file for multiproc case
-
-  if (me == 0) {
-    std::string base = file;
-    if (multiproc) base.replace(base.find('%'),1,"base");
-
-    fp = fopen(base.c_str(),"wb");
-    if (fp == nullptr)
-      error->one(FLERR, "Cannot open restart file {}: {}", base, utils::getsyserror());
-  }
 
   // proc 0 writes magic string, endian flag, numeric version
 
@@ -239,54 +295,40 @@ void WriteRestart::write(const std::string &file)
 
   modify->write_restart(fp);
 
-  // communication buffer for my atom info
   // max_size = largest buffer needed by any proc
   // NOTE: are assuming size_restart() returns 32-bit int
   //   for a huge one-proc problem, nlocal could be 32-bit
   //   but nlocal * doubles-peratom could overflow
 
-  int max_size;
-  int send_size = atom->avec->size_restart();
+  send_size = atom->avec->size_restart();
   MPI_Allreduce(&send_size,&max_size,1,MPI_INT,MPI_MAX,world);
-
-  double *buf;
-  memory->create(buf,max_size,"write_restart:buf");
-  memset(buf,0,max_size*sizeof(double));
 
   // all procs write file layout info which may include per-proc sizes
 
   file_layout(send_size);
 
   // header info is complete
-  // if multiproc output:
-  //   close header file, open multiname file on each writing proc,
-  //   write PROCSPERFILE into new file
-
-  int io_error = 0;
-  if (multiproc) {
-    if (me == 0 && fp) {
-      magic_string();
-      if (ferror(fp)) io_error = 1;
-      fp = nullptr;             // implicitly closes file
-    }
-
-    std::string multiname = file;
-    multiname.replace(multiname.find('%'),1,fmt::format("{}",icluster));
-
-    if (filewriter) {
-      fp = fopen(multiname.c_str(),"wb");
-      if (fp == nullptr)
-        error->one(FLERR, "Cannot open restart file {}: {}", multiname, utils::getsyserror());
-      write_int(PROCSPERFILE,nclusterprocs);
-    }
+  // if multiproc output, that's the end of the base file
+  if (multiproc && me == 0) {
+    magic_string();
   }
+}
 
-  // check for I/O error status
+/* ----------------------------------------------------------------------
+   All procs contribute to filewriters writing atom data
+------------------------------------------------------------------------- */
 
-  int io_all = 0;
-  MPI_Allreduce(&io_error,&io_all,1,MPI_INT,MPI_MAX,world);
-  if (io_all) error->all(FLERR,"I/O error while writing restart");
-
+void WriteRestart::peratom_file() {
+  if (multiproc && filewriter) {
+    write_int(PROCSPERFILE,nclusterprocs);
+  }
+  
+  // communication buffer for my atom info
+  // max_size = largest buffer needed by any proc
+  double *buf;
+  memory->create(buf,max_size,"write_restart:buf");
+  memset(buf,0,max_size*sizeof(double));
+  
   // pack my atom data into buf
 
   AtomVec *avec = atom->avec;
@@ -364,29 +406,15 @@ void WriteRestart::write(const std::string &file)
       write_double_vec(PERPROC,recv_size,buf);
     }
     magic_string();
-    if (ferror(fp)) io_error = 1;
-    fp = nullptr;               // implicitly closes file
 
   } else {
     MPI_Recv(&tmp,0,MPI_INT,fileproc,0,world,MPI_STATUS_IGNORE);
     MPI_Rsend(buf,send_size,MPI_DOUBLE,fileproc,0,world);
   }
 
-  // check again for I/O error status
-
-  io_all = 0;
-  MPI_Allreduce(&io_error,&io_all,1,MPI_INT,MPI_MAX,world);
-  if (io_all) error->all(FLERR,"I/O error while writing restart");
-
   // clean up
 
   memory->destroy(buf);
-
-  // invoke any fixes that write their own restart file
-
-  for (const auto &fix : modify->get_fix_list())
-    if (fix->restart_file)
-      fix->write_restart_file(file.c_str());
 }
 
 /* ----------------------------------------------------------------------

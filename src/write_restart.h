@@ -30,12 +30,14 @@ class WriteRestart : public Command {
   WriteRestart(class LAMMPS *);
   void command(int, char **) override;
   void multiproc_options(int, int, char **);
-  void write(const std::string &);
+  virtual void write(const std::string &);
 
  private:
   int me, nprocs;
   SafeFilePtr fp;
   bigint natoms;    // natoms (sum of nlocal) to write into file
+  int send_size;    // size of atom restart data on this proc
+  int max_size;     // max size of atom restart data on any proc
   int noinit;
 
   int multiproc;        // 0 = proc 0 writes for all
@@ -44,6 +46,9 @@ class WriteRestart : public Command {
   int filewriter;       // 1 if this proc writes a file, else 0
   int fileproc;         // ID of proc in my cluster who writes to file
   int icluster;         // which cluster I am in
+
+  void base_file();
+  void peratom_file();
 
   void header();
   void type_arrays();

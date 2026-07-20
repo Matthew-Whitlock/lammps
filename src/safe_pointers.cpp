@@ -41,3 +41,10 @@ SafeFilePtr &SafeFilePtr::operator=(FILE *_fp)
   if (_fp == nullptr) use_pclose = false;
   return *this;
 }
+
+FILE *SafeFilePtr::release() {
+  FILE* ret = fp;
+  fp = nullptr;
+  use_pclose = false;
+  return ret;
+}

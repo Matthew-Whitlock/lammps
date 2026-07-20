@@ -28,6 +28,7 @@ namespace LAMMPS_NS {
 class ReadRestart : public Command {
  public:
   ReadRestart(class LAMMPS *);
+  ~ReadRestart();
   void command(int, char **) override;
 
  private:
@@ -39,8 +40,20 @@ class ReadRestart : public Command {
   int multiproc_file;    // # of parallel files in restart
   int nprocs_file;       // total # of procs that wrote restart file
   int revision;          // revision number of the restart file format
+  int remapflag;         // 0 = noremap argument passed
+  MPI_Comm clustercomm;  // comm to distribute data on when multiproc > nprocs
+  int maxbuf;            // size of tmp buffer for reading atom data
+  double *buf;           // tmp buffer for reading atom data
 
   std::string file_search(const std::string &);
+  
+  void migrate_atoms();
+  void check_restart();
+  void reinit_simulation();
+
+  void base_file();
+  void peratom_file();
+
   void header();
   void type_arrays();
   void force_fields();

@@ -44,7 +44,23 @@ using namespace LAMMPS_NS;
 
 /* ---------------------------------------------------------------------- */
 
-ReadRestart::ReadRestart(LAMMPS *lmp) : Command(lmp) {}
+ReadRestart::ReadRestart(LAMMPS *lmp) : Command(lmp)
+{
+  clustercomm = MPI_COMM_NULL;
+  maxbuf = 0;
+  buf = nullptr;
+}
+
+/* ---------------------------------------------------------------------- */
+
+ReadRestart::~ReadRestart()
+{
+  if (clustercomm != MPI_COMM_NULL) MPI_Comm_free(&clustercomm);
+  if (buf) {
+    maxbuf = 0;
+    memory->destroy(buf);
+  }
+}
 
 /* ---------------------------------------------------------------------- */
 
@@ -65,7 +81,7 @@ void ReadRestart::command(int narg, char **arg)
 
   // check for remap option
 
-  int remapflag = 1;
+  remapflag = 1;
   if (narg == 2) {
     if (strcmp(arg[1],"noremap") == 0) remapflag = 0;
     else if (strcmp(arg[1],"remap") == 0) remapflag = 1; // for backward compatibility
@@ -108,6 +124,92 @@ void ReadRestart::command(int narg, char **arg)
                  utils::getsyserror());
   }
 
+  // Read base file information
+
+  base_file();
+
+  // close header file if in multiproc mode
+
+  if (multiproc && me == 0) {
+    fp = nullptr;               // implicitly closes the file
+  }
+  
+  if (multiproc == 0) {
+    peratom_file();
+  } else if (nprocs <= multiproc_file) {
+    // input of multiple native files with procs <= files
+    // # of files = multiproc_file
+    // each proc reads a subset of files, striding by nprocs
+
+    for (int iproc = me; iproc < multiproc_file; iproc += nprocs) {
+      std::string procfile = file;
+      procfile.replace(procfile.find('%'),1,fmt::format("{}",iproc));
+      fp = fopen(procfile.c_str(),"rb");
+      if (fp == nullptr)
+        error->one(FLERR, 1, "Cannot open restart file {}: {}",procfile, utils::getsyserror());
+
+      peratom_file();
+    }
+  } else {
+    // input of multiple native files with procs > files
+    // # of files = multiproc_file
+    // cluster procs based on # of files
+    // clustercomm = MPI communicator within my cluster of procs
+
+    int nfile = multiproc_file;
+    int icluster = static_cast<int> ((bigint) me * nfile/nprocs);
+    
+    MPI_Comm clustercomm;
+    MPI_Comm_split(world,icluster,0,&clustercomm);
+
+    int clusterrank;
+    MPI_Comm_rank(clustercomm, &clusterrank);
+    int filereader = clusterrank == 0;
+
+    if (filereader) {
+      std::string procfile = file;
+      procfile.replace(procfile.find('%'),1,fmt::format("{}",icluster));
+      fp = fopen(procfile.c_str(),"rb");
+      if (fp == nullptr)
+        error->one(FLERR, 1, "Cannot open restart file {}: {}", procfile, utils::getsyserror());
+    }
+
+    peratom_file(); 
+
+    MPI_Comm_free(&clustercomm);
+  }
+
+  // clean-up memory
+
+  delete[] file;
+  memory->destroy(buf);
+  maxbuf = 0;
+
+  // for multiproc files:
+  // perform irregular comm to migrate atoms to correct procs
+
+  if (multiproc) {
+    migrate_atoms();
+  }
+
+  check_restart();
+
+  reinit_simulation();
+
+  // total time
+
+  MPI_Barrier(world);
+
+  if (comm->me == 0)
+    utils::logmesg(lmp,"  read_restart CPU = {:.3f} seconds\n",platform::walltime()-time1);
+}
+
+/* ----------------------------------------------------------------------
+   read base restart file
+------------------------------------------------------------------------- */
+
+void ReadRestart::base_file()
+{
   // read magic string, endian flag, format revision
 
   magic_string();
@@ -161,19 +263,18 @@ void ReadRestart::command(int narg, char **arg)
   // read file layout info
 
   file_layout();
+}
 
-  // close header file if in multiproc mode
+/* ----------------------------------------------------------------------
+   read peratom values
+------------------------------------------------------------------------- */
 
-  if (multiproc && me == 0) {
-    fp = nullptr;               // implicitly closes the file
-  }
-
+void ReadRestart::peratom_file()
+{
   // read per-proc info
 
   AtomVec *avec = atom->avec;
 
-  int maxbuf = 0;
-  double *buf = nullptr;
   int m,flag;
 
   // input of single native file
@@ -201,7 +302,7 @@ void ReadRestart::command(int narg, char **arg)
       if (read_int() != PERPROC)
         error->all(FLERR, 1, "Invalid flag in peratom section of restart file");
 
-      n = read_int();
+      int n = read_int();
       if (n < 0) error->all(FLERR, 1, "Invalid data size in peratom section of restart file");
       if (n > maxbuf) {
         maxbuf = n;
@@ -238,79 +339,46 @@ void ReadRestart::command(int narg, char **arg)
   }
 
   // input of multiple native files with procs <= files
-  // # of files = multiproc_file
-  // each proc reads a subset of files, striding by nprocs
   // each proc keeps all atoms in all perproc chunks in its files
 
   else if (nprocs <= multiproc_file) {
 
-    for (int iproc = me; iproc < multiproc_file; iproc += nprocs) {
-      std::string procfile = file;
-      procfile.replace(procfile.find('%'),1,fmt::format("{}",iproc));
-      fp = fopen(procfile.c_str(),"rb");
-      if (fp == nullptr)
-        error->one(FLERR, 1, "Cannot open restart file {}: {}",procfile, utils::getsyserror());
+    utils::sfread(FLERR,&flag,sizeof(int),1,fp,nullptr,error);
+    if (flag != PROCSPERFILE)
+      error->one(FLERR, 1, "Invalid flag in peratom section of restart file");
+    int procsperfile;
+    utils::sfread(FLERR,&procsperfile,sizeof(int),1,fp,nullptr,error);
+
+    for (int i = 0; i < procsperfile; i++) {
       utils::sfread(FLERR,&flag,sizeof(int),1,fp,nullptr,error);
-      if (flag != PROCSPERFILE)
+      if (flag != PERPROC)
         error->one(FLERR, 1, "Invalid flag in peratom section of restart file");
-      int procsperfile;
-      utils::sfread(FLERR,&procsperfile,sizeof(int),1,fp,nullptr,error);
 
-      for (int i = 0; i < procsperfile; i++) {
-        utils::sfread(FLERR,&flag,sizeof(int),1,fp,nullptr,error);
-        if (flag != PERPROC)
-          error->one(FLERR, 1, "Invalid flag in peratom section of restart file");
-
-        utils::sfread(FLERR,&n,sizeof(int),1,fp,nullptr,error);
-        if (n > maxbuf) {
-          maxbuf = n;
-          memory->destroy(buf);
-          memory->create(buf,maxbuf,"read_restart:buf");
-        }
-        utils::sfread(FLERR,buf,sizeof(double),n,fp,nullptr,error);
-
-        m = 0;
-        while (m < n) m += avec->unpack_restart(&buf[m]);
+      int n;
+      utils::sfread(FLERR,&n,sizeof(int),1,fp,nullptr,error);
+      if (n > maxbuf) {
+        maxbuf = n;
+        memory->destroy(buf);
+        memory->create(buf,maxbuf,"read_restart:buf");
       }
+      utils::sfread(FLERR,buf,sizeof(double),n,fp,nullptr,error);
+
+      m = 0;
+      while (m < n) m += avec->unpack_restart(&buf[m]);
     }
   }
 
   // input of multiple native files with procs > files
-  // # of files = multiproc_file
-  // cluster procs based on # of files
   // 1st proc in each cluster reads per-proc chunks from file
   // sends chunks round-robin to other procs in its cluster
   // each proc keeps all atoms in its perproc chunks in file
 
   else {
-
     // nclusterprocs = # of procs in my cluster that read from one file
-    // filewriter = 1 if this proc reads file, else 0
-    // fileproc = ID of proc in my cluster who reads from file
-    // clustercomm = MPI communicator within my cluster of procs
-
-    int nfile = multiproc_file;
-    int icluster = static_cast<int> ((bigint) me * nfile/nprocs);
-    int fileproc = static_cast<int> ((bigint) icluster * nprocs/nfile);
-    int fcluster = static_cast<int> ((bigint) fileproc * nfile/nprocs);
-    if (fcluster < icluster) fileproc++;
-    int fileprocnext =
-      static_cast<int> ((bigint) (icluster+1) * nprocs/nfile);
-    fcluster = static_cast<int> ((bigint) fileprocnext * nfile/nprocs);
-    if (fcluster < icluster+1) fileprocnext++;
-    int nclusterprocs = fileprocnext - fileproc;
-    int filereader = 0;
-    if (me == fileproc) filereader = 1;
-    MPI_Comm clustercomm;
-    MPI_Comm_split(world,icluster,0,&clustercomm);
-
-    if (filereader) {
-      std::string procfile = file;
-      procfile.replace(procfile.find('%'),1,fmt::format("{}",icluster));
-      fp = fopen(procfile.c_str(),"rb");
-      if (fp == nullptr)
-        error->one(FLERR, 1, "Cannot open restart file {}: {}", procfile, utils::getsyserror());
-    }
+    int nclusterprocs, clusterrank;
+    MPI_Comm_size(clustercomm, &nclusterprocs);
+    MPI_Comm_rank(clustercomm, &clusterrank);
+    int filereader = clusterrank == 0;
 
     int procsperfile;
 
@@ -326,6 +394,7 @@ void ReadRestart::command(int narg, char **arg)
     MPI_Request request;
 
     for (int i = 0; i < procsperfile; i++) {
+      int n;
       if (filereader) {
         utils::sfread(FLERR,&flag,sizeof(int),1,fp,nullptr,error);
         if (flag != PERPROC)
@@ -340,93 +409,89 @@ void ReadRestart::command(int narg, char **arg)
         utils::sfread(FLERR,buf,sizeof(double),n,fp,nullptr,error);
 
         if (i % nclusterprocs) {
-          iproc = me + (i % nclusterprocs);
-          MPI_Send(&n,1,MPI_INT,iproc,0,world);
-          MPI_Recv(&tmp,0,MPI_INT,iproc,0,world,MPI_STATUS_IGNORE);
-          MPI_Rsend(buf,n,MPI_DOUBLE,iproc,0,world);
+          iproc = (i % nclusterprocs);
+          MPI_Send(&n,1,MPI_INT,iproc,0,clustercomm);
+          MPI_Recv(&tmp,0,MPI_INT,iproc,0,clustercomm,MPI_STATUS_IGNORE);
+          MPI_Rsend(buf,n,MPI_DOUBLE,iproc,0,clustercomm);
         }
 
-      } else if (i % nclusterprocs == me - fileproc) {
-        MPI_Recv(&n,1,MPI_INT,fileproc,0,world,MPI_STATUS_IGNORE);
+      } else if (i % nclusterprocs == clusterrank) {
+        MPI_Recv(&n,1,MPI_INT,0,0,clustercomm,MPI_STATUS_IGNORE);
         if (n > maxbuf) {
           maxbuf = n;
           memory->destroy(buf);
           memory->create(buf,maxbuf,"read_restart:buf");
         }
-        MPI_Irecv(buf,n,MPI_DOUBLE,fileproc,0,world,&request);
-        MPI_Send(&tmp,0,MPI_INT,fileproc,0,world);
+        MPI_Irecv(buf,n,MPI_DOUBLE,0,0,clustercomm,&request);
+        MPI_Send(&tmp,0,MPI_INT,0,0,clustercomm);
         MPI_Wait(&request,MPI_STATUS_IGNORE);
       }
 
-      if (i % nclusterprocs == me - fileproc) {
+      if (i % nclusterprocs == clusterrank) {
         m = 0;
         while (m < n) m += avec->unpack_restart(&buf[m]);
       }
     }
 
-    MPI_Comm_free(&clustercomm);
   }
 
-  // clean-up memory
+}
 
-  delete[] file;
-  memory->destroy(buf);
+void ReadRestart::migrate_atoms()
+{
+  // if remapflag set, remap all atoms I read back to box before migrating
 
-  // for multiproc files:
-  // perform irregular comm to migrate atoms to correct procs
+  if (remapflag) {
+    double **x = atom->x;
+    imageint *image = atom->image;
+    int nlocal = atom->nlocal;
 
-  if (multiproc) {
-
-    // if remapflag set, remap all atoms I read back to box before migrating
-
-    if (remapflag) {
-      double **x = atom->x;
-      imageint *image = atom->image;
-      int nlocal = atom->nlocal;
-
-      for (int i = 0; i < nlocal; i++) domain->remap(x[i],image[i]);
-    }
-
-    // create a temporary fix to hold and migrate extra atom info
-    // necessary b/c irregular will migrate atoms
-
-    if (nextra)
-      modify->add_fix(fmt::format("_read_restart all READ_RESTART {} {}",
-                                  nextra,modify->nfix_restart_peratom));
-
-    // move atoms to new processors via irregular()
-    // turn sorting on in migrate_atoms() to avoid non-reproducible restarts
-    // in case read by different proc than wrote restart file
-    // first do map_init() since irregular->migrate_atoms() will do map_clear()
-
-    if (atom->map_style != Atom::MAP_NONE) {
-      atom->map_init();
-      atom->map_set();
-    }
-    if (domain->triclinic) domain->x2lamda(atom->nlocal);
-    auto *irregular = new Irregular(lmp);
-    irregular->migrate_atoms(1);
-    delete irregular;
-    if (domain->triclinic) domain->lamda2x(atom->nlocal);
-
-    // put extra atom info held by fix back into atom->extra
-    // destroy temporary fix
-
-    if (nextra) {
-      memory->destroy(atom->extra);
-      memory->create(atom->extra,atom->nmax,nextra,"atom:extra");
-      auto *fix = dynamic_cast<FixReadRestart *>(modify->get_fix_by_id("_read_restart"));
-      int *count = fix->count;
-      double **extra = fix->extra;
-      double **atom_extra = atom->extra;
-      int nlocal = atom->nlocal;
-      for (int i = 0; i < nlocal; i++)
-        for (int j = 0; j < count[i]; j++)
-          atom_extra[i][j] = extra[i][j];
-      modify->delete_fix("_read_restart");
-    }
+    for (int i = 0; i < nlocal; i++) domain->remap(x[i],image[i]);
   }
 
+  // create a temporary fix to hold and migrate extra atom info
+  // necessary b/c irregular will migrate atoms
+  int nextra = atom->nextra_store;
+  if (nextra)
+    modify->add_fix(fmt::format("_read_restart all READ_RESTART {} {}",
+                                nextra,modify->nfix_restart_peratom));
+
+  // move atoms to new processors via irregular()
+  // turn sorting on in migrate_atoms() to avoid non-reproducible restarts
+  // in case read by different proc than wrote restart file
+  // first do map_init() since irregular->migrate_atoms() will do map_clear()
+
+  if (atom->map_style != Atom::MAP_NONE) {
+    atom->map_init();
+    atom->map_set();
+  }
+  if (domain->triclinic) domain->x2lamda(atom->nlocal);
+  auto *irregular = new Irregular(lmp);
+  irregular->migrate_atoms(1);
+  delete irregular;
+  if (domain->triclinic) domain->lamda2x(atom->nlocal);
+
+  // put extra atom info held by fix back into atom->extra
+  // destroy temporary fix
+
+  if (nextra) {
+    memory->destroy(atom->extra);
+    memory->create(atom->extra,atom->nmax,nextra,"atom:extra");
+    auto *fix = dynamic_cast<FixReadRestart *>(modify->get_fix_by_id("_read_restart"));
+    int *count = fix->count;
+    double **extra = fix->extra;
+    double **atom_extra = atom->extra;
+    int nlocal = atom->nlocal;
+    for (int i = 0; i < nlocal; i++)
+      for (int j = 0; j < count[i]; j++)
+        atom_extra[i][j] = extra[i][j];
+    modify->delete_fix("_read_restart");
+  }
+ 
+}
+
+void ReadRestart::check_restart()
+{
   // check that all atoms were assigned to procs
 
   bigint natoms;
@@ -472,7 +537,10 @@ void ReadRestart::command(int narg, char **arg)
   // check that atom IDs are valid
 
   atom->tag_check();
+}
 
+void ReadRestart::reinit_simulation()
+{
   // create global mapping of atoms
 
   if (atom->map_style != Atom::MAP_NONE) {
@@ -486,13 +554,6 @@ void ReadRestart::command(int narg, char **arg)
     Special special(lmp);
     special.build();
   }
-
-  // total time
-
-  MPI_Barrier(world);
-
-  if (comm->me == 0)
-    utils::logmesg(lmp,"  read_restart CPU = {:.3f} seconds\n",platform::walltime()-time1);
 }
 
 /* ----------------------------------------------------------------------

@@ -88,11 +88,16 @@ class SafeFilePtr {
 
   /** Flag that the file pointer needs to be closed with `pclose()` instead of `fclose()` */
   void set_pclose() { use_pclose = true; }
+  bool get_pclose() { return use_pclose; }
 
   /** Custom type cast operator so that SafeFilePtr can be used where FILE * was used
    *
    * \return currently stored/monitored file pointer */
   operator FILE *() const { return fp; }
+
+  /** Release control of file to caller, as if assigning `nullptr` without
+   * closing the file. */
+  FILE *release();
 
  private:
   FILE *fp;
